@@ -67,8 +67,8 @@ class App {
             };
 
             try {
-                // Send via Go backend API
-                const response = await fetch('/api/contact', {
+                // Send via Railway backend API
+                const response = await fetch(getApiUrl('contact'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

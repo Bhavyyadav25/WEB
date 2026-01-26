@@ -67,10 +67,7 @@ func main() {
 	mux.HandleFunc("/api/contact", corsMiddleware(handleContact))
 	mux.HandleFunc("/api/chat", corsMiddleware(handleChat))
 	mux.HandleFunc("/api/health", corsMiddleware(handleHealth))
-
-	// Serve static files
-	fs := http.FileServer(http.Dir("../"))
-	mux.Handle("/", fs)
+	mux.HandleFunc("/", corsMiddleware(handleHealth)) // Root health check
 
 	// Start server
 	addr := fmt.Sprintf(":%s", config.Port)
