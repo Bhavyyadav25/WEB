@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhavy Yadav | Software Development Engineer</title>
+    <meta name="description" content="Backend Developer & Security Expert from IIT Delhi. Specializing in Go, Java, Python, Microservices, and Cybersecurity solutions.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Three.js Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-text">
+                <span class="loader-name">BHAVY</span>
+                <span class="loader-title">YADAV</span>
+            </div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+            <div class="loader-percent">0%</div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">
+                <span class="logo-text">BY</span>
+                <span class="logo-dot"></span>
+            </a>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active" data-section="home">Home</a>
+                <a href="#about" class="nav-link" data-section="about">About</a>
+                <a href="#skills" class="nav-link" data-section="skills">Skills</a>
+                <a href="#experience" class="nav-link" data-section="experience">Experience</a>
+                <a href="#projects" class="nav-link" data-section="projects">Projects</a>
+                <a href="#blog" class="nav-link" data-section="blog">Blog</a>
+                <a href="#contact" class="nav-link" data-section="contact">Contact</a>
+            </div>
+            <button class="nav-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-links">
+            <a href="#home" class="mobile-link">Home</a>
+            <a href="#about" class="mobile-link">About</a>
+            <a href="#skills" class="mobile-link">Skills</a>
+            <a href="#experience" class="mobile-link">Experience</a>
+            <a href="#projects" class="mobile-link">Projects</a>
+            <a href="#blog" class="mobile-link">Blog</a>
+            <a href="#contact" class="mobile-link">Contact</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>Available for opportunities</span>
+                </div>
+                <h1 class="hero-title">
+                    <span class="title-line">Hi, I'm</span>
+                    <span class="title-name">Bhavy Yadav</span>
+                </h1>
+                <div class="hero-roles">
+                    <span class="role-prefix">I build</span>
+                    <span class="role-text" id="typed-role"></span>
+                    <span class="role-cursor">|</span>
+                </div>
+                <p class="hero-description">
+                    Software Development Engineer crafting robust backend systems,
+                    security solutions, and scalable microservices. IIT Delhi alumnus
+                    with expertise in Go, Java, and distributed systems.
+                </p>
+                <div class="hero-cta">
+                    <a href="#contact" class="btn btn-primary">
+                        <span>Let's Work Together</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="#projects" class="btn btn-secondary">
+                        <span>View My Work</span>
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-count="3">0</span>
+                        <span class="stat-label">Years Experience</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-count="50">0</span>
+                        <span class="stat-suffix">+</span>
+                        <span class="stat-label">Clients Protected</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-count="100000">0</span>
+                        <span class="stat-suffix">+</span>
+                        <span class="stat-label">Daily Requests Handled</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="code-window">
+                    <div class="window-header">
+                        <div class="window-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <span class="window-title">bhavy.go</span>
+                    </div>
+                    <pre class="window-code"><code><span class="code-keyword">package</span> main
+
+<span class="code-keyword">type</span> <span class="code-type">Developer</span> <span class="code-keyword">struct</span> {
+    Name       <span class="code-type">string</span>
+    Title      <span class="code-type">string</span>
+    Skills     []<span class="code-type">string</span>
+    Available  <span class="code-type">bool</span>
+}
+
+<span class="code-keyword">func</span> <span class="code-function">main</span>() {
+    bhavy := <span class="code-type">Developer</span>{
+        Name:  <span class="code-string">"Bhavy Yadav"</span>,
+        Title: <span class="code-string">"SDE @ Clickpost"</span>,
+        Skills: []<span class="code-type">string</span>{
+            <span class="code-string">"Go"</span>, <span class="code-string">"Java"</span>, <span class="code-string">"Python"</span>,
+            <span class="code-string">"Microservices"</span>,
+            <span class="code-string">"Security"</span>,
+        },
+        Available: <span class="code-keyword">true</span>,
+    }
+    bhavy.<span class="code-function">BuildAmazingThings</span>()
+}</code></pre>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span>Scroll to explore</span>
+                <div class="scroll-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12l7 7 7-7"/>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">01</span>
+                    <h2 class="section-title">About Me</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="about-content">
+                    <div class="about-image">
+                        <div class="image-frame">
+                            <div class="image-border"></div>
+                            <div class="photo-container">
+                                <img src="https://avatars.githubusercontent.com/u/51322577?v=4" alt="Bhavy Yadav" class="profile-photo">
+                            </div>
+                        </div>
+                        <div class="about-decoration">
+                            <div class="decoration-circle"></div>
+                            <div class="decoration-dots"></div>
+                        </div>
+                    </div>
+                    <div class="about-text">
+                        <h3 class="about-greeting">Hello there!</h3>
+                        <p>
+                            I'm a <strong>Software Development Engineer</strong> with a passion for building
+                            scalable backend systems and security solutions. Currently at <strong>Clickpost</strong>,
+                            I architect systems handling quick commerce deliveries for major e-commerce platforms.
+                        </p>
+                        <p>
+                            My journey began at <strong>IIT Delhi</strong>, where I pursued Fiber Science &
+                            Nanotechnology while leading the badminton team to a state gold medal. This unique
+                            blend of technical rigor and leadership shaped my approach to software engineering.
+                        </p>
+                        <p>
+                            At <strong>WiJungle</strong>, I built DDoS protection systems, Web Application Firewalls,
+                            and security infrastructure protecting 50+ client websites. I thrive on challenges that
+                            require both deep technical expertise and creative problem-solving.
+                        </p>
+                        <div class="about-highlights">
+                            <div class="highlight">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                <span>IIT Delhi Graduate</span>
+                            </div>
+                            <div class="highlight">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                <span>Security Expert</span>
+                            </div>
+                            <div class="highlight">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                <span>Team Leader</span>
+                            </div>
+                            <div class="highlight">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                <span>Olympiad Ranker</span>
+                            </div>
+                        </div>
+                        <a href="#contact" class="btn btn-outline">
+                            <span>Get In Touch</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="skills">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">02</span>
+                    <h2 class="section-title">Skills & Expertise</h2>
+                    <div class="section-line"></div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="skills-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                <line x1="12" y1="17" x2="12" y2="21"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" data-count="2">0</span>
+                            <span class="stat-label">Years Experience</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" data-count="15">0</span>
+                            <span class="stat-label">Projects Delivered</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" data-count="50">0</span><span class="stat-suffix">+</span>
+                            <span class="stat-label">Websites Protected</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                        </div>
+                        <div class="stat-content">
+                            <span class="stat-number" data-count="100">0</span><span class="stat-suffix">K+</span>
+                            <span class="stat-label">Daily Requests Handled</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="skills-content">
+                    <!-- Primary Skills with Progress -->
+                    <div class="skills-primary">
+                        <h3 class="skills-subtitle">Core Technologies</h3>
+                        <div class="skill-bars">
+                            <div class="skill-bar-item">
+                                <div class="skill-bar-header">
+                                    <span class="skill-name">Go (Golang)</span>
+                                    <span class="skill-percent">95%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-bar-fill" style="--fill-width: 95%;"></div>
+                                </div>
+                                <span class="skill-note">Primary language for backend & security systems</span>
+                            </div>
+                            <div class="skill-bar-item">
+                                <div class="skill-bar-header">
+                                    <span class="skill-name">Java</span>
+                                    <span class="skill-percent">90%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-bar-fill" style="--fill-width: 90%;"></div>
+                                </div>
+                                <span class="skill-note">Enterprise applications & microservices</span>
+                            </div>
+                            <div class="skill-bar-item">
+                                <div class="skill-bar-header">
+                                    <span class="skill-name">Python</span>
+                                    <span class="skill-percent">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-bar-fill" style="--fill-width: 85%;"></div>
+                                </div>
+                                <span class="skill-note">Scripting, automation & data processing</span>
+                            </div>
+                            <div class="skill-bar-item">
+                                <div class="skill-bar-header">
+                                    <span class="skill-name">C++</span>
+                                    <span class="skill-percent">80%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-bar-fill" style="--fill-width: 80%;"></div>
+                                </div>
+                                <span class="skill-note">High-performance parsers & system programming</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Categories Grid -->
+                    <div class="skills-categories">
+                        <div class="skill-category">
+                            <div class="category-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                    <line x1="8" y1="21" x2="16" y2="21"/>
+                                    <line x1="12" y1="17" x2="12" y2="21"/>
+                                </svg>
+                            </div>
+                            <h3 class="category-title">Backend & Infrastructure</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag" data-level="expert">Microservices</span>
+                                <span class="skill-tag" data-level="expert">RESTful APIs</span>
+                                <span class="skill-tag" data-level="advanced">Kafka</span>
+                                <span class="skill-tag" data-level="advanced">NGINX</span>
+                                <span class="skill-tag" data-level="advanced">Docker</span>
+                                <span class="skill-tag" data-level="intermediate">Kubernetes</span>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <div class="category-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                                </svg>
+                            </div>
+                            <h3 class="category-title">Databases</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag" data-level="expert">PostgreSQL</span>
+                                <span class="skill-tag" data-level="advanced">ScyllaDB</span>
+                                <span class="skill-tag" data-level="advanced">Manticore</span>
+                                <span class="skill-tag" data-level="advanced">Redis</span>
+                                <span class="skill-tag" data-level="intermediate">MongoDB</span>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <div class="category-icon security-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                            <h3 class="category-title">Security</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag" data-level="expert">WAF Development</span>
+                                <span class="skill-tag" data-level="expert">DDoS Protection</span>
+                                <span class="skill-tag" data-level="expert">ModSecurity</span>
+                                <span class="skill-tag" data-level="advanced">Anti-APT</span>
+                                <span class="skill-tag" data-level="advanced">ICAP Protocol</span>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <div class="category-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 20V10"/>
+                                    <path d="M12 20V4"/>
+                                    <path d="M6 20v-6"/>
+                                </svg>
+                            </div>
+                            <h3 class="category-title">Protocols & APIs</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag" data-level="expert">GraphQL</span>
+                                <span class="skill-tag" data-level="expert">WebSockets</span>
+                                <span class="skill-tag" data-level="advanced">gRPC</span>
+                                <span class="skill-tag" data-level="advanced">MQTT</span>
+                                <span class="skill-tag" data-level="advanced">Unix Sockets</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- What I Do Section -->
+                <div class="services-section">
+                    <h3 class="skills-subtitle">What I Do</h3>
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                    <line x1="8" y1="21" x2="16" y2="21"/>
+                                    <line x1="12" y1="17" x2="12" y2="21"/>
+                                </svg>
+                            </div>
+                            <h4>Backend Development</h4>
+                            <p>Building scalable microservices, RESTful APIs, and high-performance backend systems using Go, Java, and Python.</p>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                            <h4>Security Solutions</h4>
+                            <p>Developing WAF, DDoS protection systems, and threat detection solutions that protect enterprise infrastructure.</p>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                                </svg>
+                            </div>
+                            <h4>System Architecture</h4>
+                            <p>Designing distributed systems, database schemas, and scalable architectures for high-throughput applications.</p>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                </svg>
+                            </div>
+                            <h4>Performance Optimization</h4>
+                            <p>Analyzing and optimizing system performance, reducing latency, and improving throughput for critical systems.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="experience">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">03</span>
+                    <h2 class="section-title">Experience</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="experience-timeline">
+                    <div class="timeline-line"></div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-dot"></div>
+                            <div class="marker-pulse"></div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <div class="timeline-company">
+                                    <h3>Clickpost</h3>
+                                    <span class="timeline-badge current">Current</span>
+                                </div>
+                                <span class="timeline-date">Sep 2025 - Present</span>
+                            </div>
+                            <h4 class="timeline-role">Software Development Engineer</h4>
+                            <p class="timeline-location">Remote, India</p>
+                            <ul class="timeline-achievements">
+                                <li>
+                                    <strong>Store Master System:</strong> Architected backend supporting bulk CRUD for 1000+ stores with geolocation validation using Haversine calculations
+                                </li>
+                                <li>
+                                    <strong>Serviceability Dashboard:</strong> Designed RESTful APIs for polygon-based delivery serviceability and ETA configurations
+                                </li>
+                                <li>
+                                    <strong>Analytics Pipeline:</strong> Built high-throughput shipment analytics system processing quick commerce deliveries
+                                </li>
+                                <li>
+                                    <strong>PLP API:</strong> Developed real-time delivery options for e-commerce platforms like ARVIND
+                                </li>
+                            </ul>
+                            <div class="timeline-tech">
+                                <span>Java</span>
+                                <span>Python</span>
+                                <span>Kafka</span>
+                                <span>PostgreSQL</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-dot"></div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <div class="timeline-company">
+                                    <h3>WiJungle</h3>
+                                </div>
+                                <span class="timeline-date">Jul 2023 - Apr 2025</span>
+                            </div>
+                            <h4 class="timeline-role">Software Development Engineer</h4>
+                            <p class="timeline-location">Gurugram, India</p>
+                            <ul class="timeline-achievements">
+                                <li>
+                                    <strong>GraphQL Parser:</strong> C++ parser integrated with ModSecurity, reducing latency by 40%
+                                </li>
+                                <li>
+                                    <strong>DDoS Protection:</strong> Go-based system boosting detection speed by 35%, minimizing downtime by 60%
+                                </li>
+                                <li>
+                                    <strong>Web Application Firewall:</strong> Protected 50+ client websites, reducing breaches by 25%
+                                </li>
+                                <li>
+                                    <strong>Log Analyzer:</strong> Reduced log processing time by 80% using Unix sockets to Manticore
+                                </li>
+                                <li>
+                                    <strong>Anti-APT System:</strong> Reduced advanced persistent threats by 65%
+                                </li>
+                                <li>
+                                    <strong>ICAP Server:</strong> Handling 100,000+ HTTP/HTTPS requests daily
+                                </li>
+                            </ul>
+                            <div class="timeline-tech">
+                                <span>Go</span>
+                                <span>C++</span>
+                                <span>ModSecurity</span>
+                                <span>MQTT</span>
+                                <span>Squid</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-dot"></div>
+                        </div>
+                        <div class="timeline-content">
+                            <div class="timeline-header">
+                                <div class="timeline-company">
+                                    <h3>IIT Delhi</h3>
+                                </div>
+                                <span class="timeline-date">2019 - 2023</span>
+                            </div>
+                            <h4 class="timeline-role">B.Tech - Fiber Science & Nanotechnology</h4>
+                            <p class="timeline-location">New Delhi, India</p>
+                            <ul class="timeline-achievements">
+                                <li>
+                                    <strong>Captain, Badminton:</strong> Led team to state gold medal and IIT Delhi GC win
+                                </li>
+                                <li>
+                                    <strong>Coordinator, Rendezvous:</strong> Led team of 35 for sponsor MoUs and event management
+                                </li>
+                                <li>
+                                    <strong>Academic Mentor:</strong> Mentored students in engineering drawing
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">04</span>
+                    <h2 class="section-title">Projects</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="projects-filter">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="security">Security</button>
+                    <button class="filter-btn" data-filter="backend">Backend</button>
+                    <button class="filter-btn" data-filter="tools">Tools</button>
+                </div>
+                <div class="projects-grid" id="projects-grid">
+                    <!-- Professional Projects -->
+                    <div class="project-card featured" data-category="security">
+                        <div class="project-header">
+                            <div class="project-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                            <span class="project-badge">WiJungle</span>
+                        </div>
+                        <h3 class="project-title">DDoS Protection System</h3>
+                        <p class="project-description">
+                            Go-based backend for enterprise DDoS protection with advanced security policies
+                            and rule enforcement. Boosted detection speed by 35% and minimized downtime by 60%.
+                        </p>
+                        <div class="project-tech">
+                            <span>Go</span>
+                            <span>Security</span>
+                            <span>Real-time</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="stat">35% faster detection</span>
+                            <span class="stat">60% less downtime</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="security">
+                        <div class="project-header">
+                            <div class="project-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                            </div>
+                            <span class="project-badge">WiJungle</span>
+                        </div>
+                        <h3 class="project-title">Web Application Firewall</h3>
+                        <p class="project-description">
+                            Enterprise WAF protecting 50+ client websites with customized ModSecurity rules
+                            and real-time threat monitoring. Reduced security breaches by 25%.
+                        </p>
+                        <div class="project-tech">
+                            <span>ModSecurity</span>
+                            <span>Go</span>
+                            <span>NGINX</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="stat">50+ websites protected</span>
+                            <span class="stat">25% fewer breaches</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="backend">
+                        <div class="project-header">
+                            <div class="project-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="2" y1="12" x2="22" y2="12"/>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                </svg>
+                            </div>
+                            <span class="project-badge">Clickpost</span>
+                        </div>
+                        <h3 class="project-title">Store Master System</h3>
+                        <p class="project-description">
+                            Comprehensive store management backend supporting bulk CRUD operations for 1000+ stores
+                            with geolocation validation using Haversine calculations for hyper-local delivery.
+                        </p>
+                        <div class="project-tech">
+                            <span>Java</span>
+                            <span>PostgreSQL</span>
+                            <span>Haversine</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="stat">1000+ stores managed</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="tools">
+                        <div class="project-header">
+                            <div class="project-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="4 17 10 11 4 5"/>
+                                    <line x1="12" y1="19" x2="20" y2="19"/>
+                                </svg>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://github.com/Bhavyyadav25/GraphQL-Parser" target="_blank" class="project-link" title="GitHub">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                        <h3 class="project-title">GraphQL Parser</h3>
+                        <p class="project-description">
+                            C++ GraphQL parser integrated with ModSecurity as an adaptive module.
+                            Parses queries and converts to JSON, reducing parsing latency by 40%.
+                        </p>
+                        <div class="project-tech">
+                            <span>C++</span>
+                            <span>GraphQL</span>
+                            <span>ModSecurity</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="stat">40% latency reduction</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="backend">
+                        <div class="project-header">
+                            <div class="project-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
+                            <span class="project-badge">WiJungle</span>
+                        </div>
+                        <h3 class="project-title">Log Analysis System</h3>
+                        <p class="project-description">
+                            Converts diverse logs to JSON and transmits via Unix sockets to Manticore.
+                            Enables detailed graph analysis for system insights with 80% faster processing.
+                        </p>
+                        <div class="project-tech">
+                            <span>Go</span>
+                            <span>Unix Sockets</span>
+                            <span>Manticore</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="stat">80% faster processing</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="security">
+                        <div class="project-header">
+                            <div class="project-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                </svg>
+                            </div>
+                            <span class="project-badge">WiJungle</span>
+                        </div>
+                        <h3 class="project-title">ICAP Server</h3>
+                        <p class="project-description">
+                            High-performance ICAP server built with Go and Squid, handling 100,000+ HTTP/HTTPS
+                            requests daily. Assesses file safety and enforces security policies.
+                        </p>
+                        <div class="project-tech">
+                            <span>Go</span>
+                            <span>Squid</span>
+                            <span>ICAP</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="stat">100K+ daily requests</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="security">
+                        <div class="project-header">
+                            <div class="project-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                            </div>
+                            <span class="project-badge">WiJungle</span>
+                        </div>
+                        <h3 class="project-title">Anti-APT Defense System</h3>
+                        <p class="project-description">
+                            Advanced Persistent Threat detection system that scans requests and detects
+                            malicious activities. Reduced APT threats by 65% through proactive monitoring.
+                        </p>
+                        <div class="project-tech">
+                            <span>Go</span>
+                            <span>Security</span>
+                            <span>Threat Detection</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="stat">65% threat reduction</span>
+                        </div>
+                    </div>
+
+                    <div class="project-card" data-category="backend">
+                        <div class="project-header">
+                            <div class="project-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                    <line x1="8" y1="21" x2="16" y2="21"/>
+                                    <line x1="12" y1="17" x2="12" y2="21"/>
+                                </svg>
+                            </div>
+                            <span class="project-badge">WiJungle</span>
+                        </div>
+                        <h3 class="project-title">Router Config Automation</h3>
+                        <p class="project-description">
+                            Automated router configuration updates using Go and MQTT protocol.
+                            Reduced manual intervention by 70% through efficient CRUD operations.
+                        </p>
+                        <div class="project-tech">
+                            <span>Go</span>
+                            <span>MQTT</span>
+                            <span>Automation</span>
+                        </div>
+                        <div class="project-stats">
+                            <span class="stat">70% less manual work</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="github-section">
+                    <h3>More on GitHub</h3>
+                    <div class="github-repos" id="github-repos">
+                        <!-- GitHub repos will be loaded dynamically -->
+                        <div class="repo-loading">
+                            <div class="loading-spinner"></div>
+                            <span>Loading repositories...</span>
+                        </div>
+                    </div>
+                    <a href="https://github.com/Bhavyyadav25" target="_blank" class="btn btn-outline">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        <span>View All Repositories</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section id="blog" class="blog">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">05</span>
+                    <h2 class="section-title">Insights & Blog</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="blog-grid">
+                    <article class="blog-card featured">
+                        <div class="blog-image">
+                            <div class="blog-image-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-meta">
+                                <span class="blog-category">Security</span>
+                                <span class="blog-date">Coming Soon</span>
+                            </div>
+                            <h3 class="blog-title">Building Enterprise-Grade DDoS Protection with Go</h3>
+                            <p class="blog-excerpt">
+                                Deep dive into architecting a high-performance DDoS protection system
+                                that can handle millions of requests while maintaining low latency.
+                            </p>
+                            <div class="blog-tags">
+                                <span>Go</span>
+                                <span>Security</span>
+                                <span>Architecture</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="blog-image-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <polyline points="16 18 22 12 16 6"/>
+                                    <polyline points="8 6 2 12 8 18"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-meta">
+                                <span class="blog-category">Backend</span>
+                                <span class="blog-date">Coming Soon</span>
+                            </div>
+                            <h3 class="blog-title">Microservices Communication: REST vs GraphQL vs gRPC</h3>
+                            <p class="blog-excerpt">
+                                Comparing different approaches to service-to-service communication
+                                and when to use each one.
+                            </p>
+                            <div class="blog-tags">
+                                <span>Microservices</span>
+                                <span>API</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <div class="blog-image-placeholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-meta">
+                                <span class="blog-category">Performance</span>
+                                <span class="blog-date">Coming Soon</span>
+                            </div>
+                            <h3 class="blog-title">Optimizing Log Processing with Unix Sockets</h3>
+                            <p class="blog-excerpt">
+                                How we reduced log processing time by 80% using Unix sockets
+                                and efficient data pipelines.
+                            </p>
+                            <div class="blog-tags">
+                                <span>Go</span>
+                                <span>Performance</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">06</span>
+                    <h2 class="section-title">Let's Connect</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <h3>Ready to work together?</h3>
+                        <p>
+                            I'm always open to discussing new projects, creative ideas,
+                            or opportunities to be part of your vision. Let's build something amazing.
+                        </p>
+                        <div class="contact-details">
+                            <a href="mailto:yadavbhavy25@gmail.com" class="contact-item">
+                                <div class="contact-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                        <polyline points="22,6 12,13 2,6"/>
+                                    </svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span class="contact-label">Email</span>
+                                    <span class="contact-value">yadavbhavy25@gmail.com</span>
+                                </div>
+                            </a>
+                            <a href="tel:+917303345356" class="contact-item">
+                                <div class="contact-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                    </svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span class="contact-label">Phone</span>
+                                    <span class="contact-value">+91 7303345356</span>
+                                </div>
+                            </a>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                        <circle cx="12" cy="10" r="3"/>
+                                    </svg>
+                                </div>
+                                <div class="contact-text">
+                                    <span class="contact-label">Location</span>
+                                    <span class="contact-value">Delhi, India</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://linkedin.com/in/yadavbhavy" target="_blank" class="social-link" title="LinkedIn">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </a>
+                            <a href="https://github.com/Bhavyyadav25" target="_blank" class="social-link" title="GitHub">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                </svg>
+                            </a>
+                            <a href="https://x.com/bhavy_yadav" target="_blank" class="social-link" title="X (Twitter)">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="contact-form-container">
+                        <form id="contact-form" class="contact-form">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" id="name" name="name" required placeholder="Your name">
+                                <div class="form-line"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required placeholder="your@email.com">
+                                <div class="form-line"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <input type="text" id="subject" name="subject" required placeholder="Project inquiry">
+                                <div class="form-line"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" name="message" rows="5" required placeholder="Tell me about your project..."></textarea>
+                                <div class="form-line"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-submit">
+                                <span>Send Message</span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"/>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                </svg>
+                            </button>
+                        </form>
+                        <div id="form-success" class="form-success hidden">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <h3>Message Sent!</h3>
+                            <p>Thanks for reaching out. I'll get back to you soon.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">BY</span>
+                    <p>Building robust systems & secure solutions.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-social">
+                    <a href="https://linkedin.com/in/yadavbhavy" target="_blank">LinkedIn</a>
+                    <a href="https://github.com/Bhavyyadav25" target="_blank">GitHub</a>
+                    <a href="https://x.com/bhavy_yadav" target="_blank">X</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Bhavy Yadav. Crafted with passion.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Chatbot -->
+    <div id="chatbot" class="chatbot">
+        <button id="chatbot-toggle" class="chatbot-toggle" aria-label="Open chat">
+            <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            <span class="chatbot-badge">AI</span>
+        </button>
+        <div class="chatbot-window">
+            <div class="chatbot-header">
+                <div class="chatbot-avatar">
+                    <span>BY</span>
+                    <span class="status-dot"></span>
+                </div>
+                <div class="chatbot-info">
+                    <h4>Chat with Bhavy's AI</h4>
+                    <span>Ask me anything about Bhavy</span>
+                </div>
+                <button class="chatbot-minimize" aria-label="Minimize chat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="chatbot-messages" id="chatbot-messages">
+                <div class="message bot">
+                    <div class="message-content">
+                        <p>Hi! I'm Bhavy's AI assistant. I can tell you about his skills, experience, projects, or help you get in touch. What would you like to know?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-suggestions">
+                <button class="suggestion" data-message="What are Bhavy's main skills?">Skills</button>
+                <button class="suggestion" data-message="Tell me about Bhavy's experience">Experience</button>
+                <button class="suggestion" data-message="What projects has Bhavy worked on?">Projects</button>
+                <button class="suggestion" data-message="How can I contact Bhavy?">Contact</button>
+            </div>
+            <form class="chatbot-input" id="chatbot-form">
+                <input type="text" id="chatbot-input-field" placeholder="Ask me anything..." autocomplete="off">
+                <button type="submit" aria-label="Send message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resume Analyzer Modal -->
+    <div id="resume-analyzer" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <h2>AI Resume Insights</h2>
+            <div class="analyzer-content">
+                <div class="insight-card">
+                    <h3>Technical Depth</h3>
+                    <div class="insight-meter">
+                        <div class="meter-fill" style="--fill: 92%"></div>
+                    </div>
+                    <p>Strong backend expertise with Go, Java, and security systems</p>
+                </div>
+                <div class="insight-card">
+                    <h3>Leadership</h3>
+                    <div class="insight-meter">
+                        <div class="meter-fill" style="--fill: 88%"></div>
+                    </div>
+                    <p>Led teams at WiJungle and IIT Delhi with proven results</p>
+                </div>
+                <div class="insight-card">
+                    <h3>Security Expertise</h3>
+                    <div class="insight-meter">
+                        <div class="meter-fill" style="--fill: 95%"></div>
+                    </div>
+                    <p>WAF, DDoS protection, Anti-APT systems experience</p>
+                </div>
+                <div class="insight-card">
+                    <h3>System Design</h3>
+                    <div class="insight-meter">
+                        <div class="meter-fill" style="--fill: 90%"></div>
+                    </div>
+                    <p>Microservices, Kafka consumers, distributed systems</p>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="document.getElementById('resume-analyzer').classList.remove('active')">
+                <span>Close</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/three-scene.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
