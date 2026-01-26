@@ -3,9 +3,8 @@
  * Update BACKEND_URL after deploying to Railway
  */
 const CONFIG = {
-    // Replace with your Railway backend URL after deployment
-    // Example: https://your-app-name.up.railway.app
-    BACKEND_URL: 'https://web-production-XXXX.up.railway.app',
+    // Railway backend URL
+    BACKEND_URL: 'https://web-production-f618.up.railway.app',
 
     // API endpoints
     API: {
