@@ -704,9 +704,19 @@ class Animations {
         const soundToggle = document.getElementById('sound-toggle');
         if (!soundToggle) return;
 
-        // Create audio context lazily
+        // Create audio context (enabled by default)
         let audioContext = null;
-        let soundEnabled = false;
+        let soundEnabled = true;
+
+        // Initialize audio context on first user interaction
+        const initAudioContext = () => {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        };
+
+        // Initialize on first click anywhere
+        document.addEventListener('click', initAudioContext, { once: true });
 
         const createSound = (frequency, duration, type = 'sine') => {
             if (!soundEnabled || !audioContext) return;
