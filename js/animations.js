@@ -98,49 +98,51 @@ class Animations {
         updateProgress();
     }
 
-    // Custom Cursor
+    // Custom Cursor - Glowing gradient blob
     initCursor() {
         const cursor = document.querySelector('.cursor');
         const follower = document.querySelector('.cursor-follower');
 
         if (!cursor || !follower) return;
 
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-        let followerX = 0, followerY = 0;
+        let isHovering = false;
 
+        // Follow cursor exactly (no lag)
         document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+            const x = e.clientX;
+            const y = e.clientY;
+
+            // Center the elements on cursor (adjust offset based on size)
+            const cursorOffset = isHovering ? 12.5 : 10;
+            const followerOffset = isHovering ? 80 : 60;
+
+            cursor.style.transform = `translate(${x - cursorOffset}px, ${y - cursorOffset}px)`;
+            follower.style.transform = `translate(${x - followerOffset}px, ${y - followerOffset}px)`;
         });
 
-        const animate = () => {
-            // Smooth cursor movement
-            cursorX += (mouseX - cursorX) * 0.2;
-            cursorY += (mouseY - cursorY) * 0.2;
-            followerX += (mouseX - followerX) * 0.1;
-            followerY += (mouseY - followerY) * 0.1;
-
-            cursor.style.left = `${cursorX}px`;
-            cursor.style.top = `${cursorY}px`;
-            follower.style.left = `${followerX}px`;
-            follower.style.top = `${followerY}px`;
-
-            requestAnimationFrame(animate);
-        };
-        animate();
-
-        // Hover effects
-        const hoverElements = document.querySelectorAll('a, button, .project-card, .skill-tag');
+        // Hover effects for interactive elements
+        const hoverElements = document.querySelectorAll('a, button, .project-card, .skill-tag, .blog-card, .timeline-content, .service-card, .stat-card');
         hoverElements.forEach(el => {
             el.addEventListener('mouseenter', () => {
+                isHovering = true;
                 cursor.classList.add('hover');
                 follower.classList.add('hover');
             });
             el.addEventListener('mouseleave', () => {
+                isHovering = false;
                 cursor.classList.remove('hover');
                 follower.classList.remove('hover');
             });
+        });
+
+        // Hide cursor when leaving window
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = '0';
+            follower.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = '0.9';
+            follower.style.opacity = '1';
         });
     }
 
