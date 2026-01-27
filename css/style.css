@@ -335,6 +335,7 @@ a, button, .btn, .project-card, .skill-tag, .blog-card,
     align-items: center;
     gap: var(--space-sm);
     margin-top: var(--space-xl);
+    margin-bottom: var(--space-2xl);
     padding: var(--space-xs) var(--space-md);
     background: rgba(34, 197, 94, 0.1);
     border: 1px solid rgba(34, 197, 94, 0.3);
