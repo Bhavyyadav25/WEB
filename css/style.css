@@ -2595,6 +2595,127 @@ section {
     color: var(--text-tertiary);
 }
 
+/* Published Blog Card */
+.blog-card.published {
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(99, 102, 241, 0.05) 100%);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.blog-card.published.featured {
+    display: grid;
+}
+
+.blog-card.published:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.2);
+}
+
+.blog-card.published .blog-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.blog-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(99, 102, 241, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.blog-card.published:hover .blog-overlay {
+    opacity: 1;
+}
+
+.read-article {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: var(--space-sm) var(--space-lg);
+    border: 2px solid white;
+    border-radius: var(--radius-full);
+}
+
+.blog-platform {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    margin-left: auto;
+}
+
+.blog-platform svg {
+    color: var(--text-secondary);
+}
+
+.blog-read-more {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    font-weight: 600;
+    color: var(--accent-primary);
+    transition: all var(--transition-fast);
+}
+
+.blog-read-more svg {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--transition-fast);
+}
+
+.blog-card.published:hover .blog-read-more {
+    color: var(--accent-secondary);
+}
+
+.blog-card.published:hover .blog-read-more svg {
+    transform: translateX(5px);
+}
+
+/* Coming Soon Blog Cards */
+.blog-card.coming-soon {
+    opacity: 0.7;
+}
+
+.blog-card.coming-soon .blog-date {
+    background: rgba(99, 102, 241, 0.1);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    color: var(--accent-primary);
+}
+
+.blog-card.coming-soon:hover {
+    opacity: 1;
+}
+
+/* Blog CTA */
+.blog-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-3xl);
+}
+
+.blog-cta .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.blog-cta .btn-outline svg {
+    transition: transform var(--transition-fast);
+}
+
+.blog-cta .btn-outline:hover svg {
+    transform: scale(1.1);
+}
+
 /* ============================================
    CONTACT SECTION
    ============================================ */
