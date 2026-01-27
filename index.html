@@ -23,6 +23,22 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <!-- Sound Toggle Button -->
+    <button class="sound-toggle" id="sound-toggle" aria-label="Toggle sound">
+        <svg class="sound-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+        <svg class="sound-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <line x1="23" y1="9" x2="17" y2="15"/>
+            <line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+    </button>
+
     <!-- Cursor -->
     <div class="cursor"></div>
     <div class="cursor-follower"></div>
@@ -114,6 +130,18 @@
                     <a href="#projects" class="btn btn-secondary">
                         <span>View My Work</span>
                     </a>
+                    <a href="resume.pdf" download class="btn btn-download" id="download-resume">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        <span>Download CV</span>
+                    </a>
+                </div>
+                <div class="live-visitors">
+                    <span class="visitor-dot"></span>
+                    <span class="visitor-count"><span id="visitor-count">0</span> people viewing now</span>
                 </div>
                 <div class="hero-stats">
                     <div class="stat">
@@ -1179,6 +1207,51 @@
             </button>
         </div>
     </div>
+
+    <!-- Project Detail Modal -->
+    <div class="project-modal" id="project-modal">
+        <div class="project-modal-content">
+            <button class="project-modal-close" onclick="closeProjectModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+            <div class="project-modal-header">
+                <div class="project-modal-icon" id="project-modal-icon"></div>
+                <span class="project-modal-badge" id="project-modal-badge"></span>
+            </div>
+            <h2 class="project-modal-title" id="project-modal-title"></h2>
+            <p class="project-modal-description" id="project-modal-description"></p>
+            <div class="project-modal-tech" id="project-modal-tech"></div>
+            <div class="project-modal-stats" id="project-modal-stats"></div>
+            <div class="project-modal-details" id="project-modal-details"></div>
+        </div>
+    </div>
+
+    <!-- Skill Modal -->
+    <div class="skill-modal" id="skill-modal">
+        <div class="skill-modal-content">
+            <div class="skill-modal-header">
+                <h3 id="skill-modal-title">Skill Name</h3>
+                <button class="skill-modal-close" onclick="closeSkillModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="related-projects" id="related-projects">
+                <!-- Related projects will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confetti-container"></div>
+
+    <!-- Page Transition -->
+    <div class="page-transition" id="page-transition"></div>
 
     <!-- Scripts -->
     <script src="js/three-scene.js"></script>

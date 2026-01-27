@@ -83,6 +83,11 @@ class App {
                     form.style.display = 'none';
                     successMessage.classList.remove('hidden');
 
+                    // Trigger confetti celebration
+                    if (window.triggerConfetti) {
+                        window.triggerConfetti();
+                    }
+
                     // Reset after delay
                     setTimeout(() => {
                         form.reset();

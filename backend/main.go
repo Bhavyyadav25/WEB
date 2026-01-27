@@ -8,7 +8,10 @@ import (
 	"net/smtp"
 	"os"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 // Config holds application configuration
@@ -48,6 +51,85 @@ type APIResponse struct {
 
 var config Config
 
+// WebSocket upgrader
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true // Allow all origins for now
+	},
+}
+
+// VisitorHub manages active WebSocket connections
+type VisitorHub struct {
+	clients    map[*websocket.Conn]bool
+	broadcast  chan int
+	register   chan *websocket.Conn
+	unregister chan *websocket.Conn
+	mu         sync.RWMutex
+}
+
+var visitorHub = &VisitorHub{
+	clients:    make(map[*websocket.Conn]bool),
+	broadcast:  make(chan int),
+	register:   make(chan *websocket.Conn),
+	unregister: make(chan *websocket.Conn),
+}
+
+// Run starts the visitor hub
+func (h *VisitorHub) Run() {
+	for {
+		select {
+		case conn := <-h.register:
+			h.mu.Lock()
+			h.clients[conn] = true
+			count := len(h.clients)
+			h.mu.Unlock()
+			log.Printf("New visitor connected. Total: %d", count)
+			h.broadcastCount(count)
+
+		case conn := <-h.unregister:
+			h.mu.Lock()
+			if _, ok := h.clients[conn]; ok {
+				delete(h.clients, conn)
+				conn.Close()
+			}
+			count := len(h.clients)
+			h.mu.Unlock()
+			log.Printf("Visitor disconnected. Total: %d", count)
+			h.broadcastCount(count)
+
+		case count := <-h.broadcast:
+			h.broadcastCount(count)
+		}
+	}
+}
+
+// broadcastCount sends the current visitor count to all connected clients
+func (h *VisitorHub) broadcastCount(count int) {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	message := map[string]int{"count": count}
+	jsonMsg, _ := json.Marshal(message)
+
+	for conn := range h.clients {
+		err := conn.WriteMessage(websocket.TextMessage, jsonMsg)
+		if err != nil {
+			log.Printf("Error broadcasting to client: %v", err)
+			conn.Close()
+			delete(h.clients, conn)
+		}
+	}
+}
+
+// GetCount returns current visitor count
+func (h *VisitorHub) GetCount() int {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	return len(h.clients)
+}
+
 func main() {
 	// Load configuration from environment
 	config = Config{
@@ -60,6 +142,9 @@ func main() {
 		GroqAPIKey: getEnv("GROQ_API_KEY", ""),
 	}
 
+	// Start visitor hub
+	go visitorHub.Run()
+
 	// Create router
 	mux := http.NewServeMux()
 
@@ -67,12 +152,13 @@ func main() {
 	mux.HandleFunc("/api/contact", corsMiddleware(handleContact))
 	mux.HandleFunc("/api/chat", corsMiddleware(handleChat))
 	mux.HandleFunc("/api/health", corsMiddleware(handleHealth))
+	mux.HandleFunc("/ws/visitors", handleVisitorWebSocket)
 	mux.HandleFunc("/", corsMiddleware(handleHealth)) // Root health check
 
 	// Start server
 	addr := fmt.Sprintf(":%s", config.Port)
 	log.Printf("Server starting on http://localhost%s", addr)
-	log.Printf("API endpoints available at /api/contact, /api/chat, /api/health")
+	log.Printf("API endpoints available at /api/contact, /api/chat, /api/health, /ws/visitors")
 
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
@@ -217,6 +303,45 @@ func handleChat(w http.ResponseWriter, r *http.Request) {
 			"response": response,
 		},
 	})
+}
+
+// WebSocket handler for live visitor tracking
+func handleVisitorWebSocket(w http.ResponseWriter, r *http.Request) {
+	// Set CORS headers for WebSocket
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("WebSocket upgrade error: %v", err)
+		return
+	}
+
+	// Register new client
+	visitorHub.register <- conn
+
+	// Send current count immediately
+	count := visitorHub.GetCount()
+	message := map[string]int{"count": count}
+	jsonMsg, _ := json.Marshal(message)
+	conn.WriteMessage(websocket.TextMessage, jsonMsg)
+
+	// Keep connection alive and handle disconnection
+	go func() {
+		defer func() {
+			visitorHub.unregister <- conn
+		}()
+
+		for {
+			// Read messages (primarily to detect disconnection)
+			_, _, err := conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+					log.Printf("WebSocket error: %v", err)
+				}
+				break
+			}
+		}
+	}()
 }
 
 // Call Groq API for AI responses
