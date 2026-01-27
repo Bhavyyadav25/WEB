@@ -21,6 +21,12 @@ class Animations {
     }
 
     setup() {
+        // Immediately ensure skill tags are visible (prevent GSAP race conditions)
+        document.querySelectorAll('.skill-tag').forEach(tag => {
+            tag.style.opacity = '1';
+            tag.style.transform = 'scale(1)';
+        });
+
         this.initLoader();
         this.initCursor();
         this.initNavbar();
@@ -43,7 +49,7 @@ class Animations {
             const elements = document.querySelectorAll(
                 '.section-header, .about-image, .about-text, .skill-category, ' +
                 '.stat-card, .service-card, .project-card, .timeline-item, ' +
-                '.blog-card, .contact-info, .contact-form-container'
+                '.blog-card, .contact-info, .contact-form-container, .skill-tag'
             );
             elements.forEach(el => {
                 el.style.opacity = '1';
@@ -391,77 +397,17 @@ class Animations {
 
     // Skills Section Animation
     initSkillsAnimation() {
-        // Stats cards animation
-        gsap.from('.stat-card', {
-            scrollTrigger: {
-                trigger: '.skills-stats',
-                start: 'top 85%',
-                toggleActions: 'play none none none'
-            },
-            y: 20,
-            duration: 0.5,
-            stagger: 0.08,
-            ease: 'power2.out',
-            immediateRender: false
-        });
-
-        // Progress bars animation - trigger immediately and on scroll
+        // Progress bars animation - simple class-based approach
         const skillBarItems = document.querySelectorAll('.skill-bar-item');
-        skillBarItems.forEach(item => {
-            ScrollTrigger.create({
-                trigger: item,
-                start: 'top 90%',
-                onEnter: () => item.classList.add('animate'),
-                once: true
-            });
-        });
-        // Also trigger after a delay as fallback
+
+        // Immediately add animate class to show progress bars
         setTimeout(() => {
             skillBarItems.forEach(item => item.classList.add('animate'));
-        }, 1500);
+        }, 500);
 
-        // Skill categories
-        gsap.from('.skill-category', {
-            scrollTrigger: {
-                trigger: '.skills-categories',
-                start: 'top 85%',
-                toggleActions: 'play none none none'
-            },
-            y: 20,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: 'power2.out',
-            immediateRender: false
-        });
-
-        // Services cards
-        gsap.from('.service-card', {
-            scrollTrigger: {
-                trigger: '.services-section',
-                start: 'top 90%',
-                toggleActions: 'play none none none'
-            },
-            y: 20,
-            duration: 0.5,
-            stagger: 0.08,
-            ease: 'power2.out',
-            immediateRender: false
-        });
-
-        // Skill tags pop-in
-        gsap.utils.toArray('.skill-tags').forEach(container => {
-            gsap.from(container.children, {
-                scrollTrigger: {
-                    trigger: container,
-                    start: 'top 85%'
-                },
-                scale: 0,
-                opacity: 0,
-                duration: 0.4,
-                stagger: 0.05,
-                ease: 'back.out(1.7)'
-            });
-        });
+        // NOTE: Removed all GSAP animations for skill-category, skill-tag, stat-card, and service-card
+        // These elements now rely on CSS for visibility (no JS animation)
+        // This fixes intermittent rendering issues caused by GSAP race conditions
     }
 
     // Timeline Animation

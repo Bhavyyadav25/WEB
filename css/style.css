@@ -1090,6 +1090,10 @@ section {
     font-weight: 500;
     color: var(--text-secondary);
     transition: all var(--transition-fast);
+    /* Force visibility - override any JS animations */
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: scale(1) !important;
 }
 
 .skill-tag[data-level="expert"] {
@@ -1104,7 +1108,7 @@ section {
 }
 
 .skill-tag:hover {
-    transform: scale(1.05);
+    transform: scale(1.05) !important;
 }
 
 /* Skills Stats Section */
