@@ -2543,6 +2543,17 @@ section {
     color: var(--text-muted);
 }
 
+.blog-cover-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-base);
+}
+
+.blog-card:hover .blog-cover-image {
+    transform: scale(1.05);
+}
+
 .blog-content {
     padding: var(--space-xl);
 }
