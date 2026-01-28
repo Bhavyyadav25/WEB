@@ -130,7 +130,7 @@ class Chatbot {
         }
     }
 
-    sendMessage(text) {
+    async sendMessage(text) {
         // Add user message
         this.addMessage(text, 'user');
         this.conversationHistory.push({ role: 'user', content: text });
@@ -138,13 +138,40 @@ class Chatbot {
         // Show typing indicator
         this.showTyping();
 
-        // Generate response
-        setTimeout(() => {
-            const response = this.generateResponse(text);
-            this.hideTyping();
-            this.addMessage(response, 'bot');
-            this.conversationHistory.push({ role: 'assistant', content: response });
-        }, 800 + Math.random() * 700);
+        let response;
+        try {
+            response = await this.callBackendChat(text);
+        } catch (e) {
+            // Fallback to local keyword responses if API fails
+            response = this.generateResponse(text);
+        }
+
+        this.hideTyping();
+        this.addMessage(response, 'bot');
+        this.conversationHistory.push({ role: 'assistant', content: response });
+    }
+
+    async callBackendChat(message) {
+        const apiUrl = typeof getApiUrl === 'function'
+            ? getApiUrl('chat')
+            : (typeof CONFIG !== 'undefined' ? CONFIG.BACKEND_URL : 'https://web-production-f618.up.railway.app') + '/api/chat';
+
+        const res = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message,
+                history: this.conversationHistory.slice(-20)
+            })
+        });
+
+        if (!res.ok) throw new Error(`API ${res.status}`);
+
+        const data = await res.json();
+        if (data.success && data.data?.response) {
+            return data.data.response;
+        }
+        throw new Error('No response from API');
     }
 
     addMessage(text, type) {
