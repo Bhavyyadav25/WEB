@@ -1,13 +1,12 @@
 package main
 
 import (
-	"crypto/tls"
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
-	"net"
 	"net/http"
-	"net/smtp"
 	"os"
 	"strings"
 	"sync"
@@ -18,13 +17,10 @@ import (
 
 // Config holds application configuration
 type Config struct {
-	Port       string
-	SMTPHost   string
-	SMTPPort   string
-	SMTPUser   string
-	SMTPPass   string
-	ToEmail    string
-	GroqAPIKey string
+	Port         string
+	ToEmail      string
+	GroqAPIKey   string
+	ResendAPIKey string
 }
 
 // ContactRequest represents a contact form submission
@@ -135,14 +131,13 @@ func (h *VisitorHub) GetCount() int {
 func main() {
 	// Load configuration from environment
 	config = Config{
-		Port:       getEnv("PORT", "8080"),
-		SMTPHost:   getEnv("SMTP_HOST", "smtp.gmail.com"),
-		SMTPPort:   getEnv("SMTP_PORT", "587"),
-		SMTPUser:   getEnv("SMTP_USER", ""),
-		SMTPPass:   getEnv("SMTP_PASS", ""),
-		ToEmail:    getEnv("TO_EMAIL", "yadavbhavy25@gmail.com"),
-		GroqAPIKey: getEnv("GROQ_API_KEY", ""),
+		Port:         getEnv("PORT", "8080"),
+		ToEmail:      getEnv("TO_EMAIL", "yadavbhavy25@gmail.com"),
+		GroqAPIKey:   getEnv("GROQ_API_KEY", ""),
+		ResendAPIKey: getEnv("RESEND_API_KEY", ""),
 	}
+
+	log.Printf("Resend API Key configured: %v", config.ResendAPIKey != "")
 
 	// Start visitor hub
 	go visitorHub.Run()
@@ -247,15 +242,17 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 		Message: "Message received! I'll get back to you soon.",
 	})
 
-	// Try to send email asynchronously if SMTP is configured
-	if config.SMTPUser != "" && config.SMTPPass != "" {
+	// Try to send email asynchronously via Resend
+	if config.ResendAPIKey != "" {
 		go func(contact ContactRequest) {
-			if err := sendEmail(contact); err != nil {
-				log.Printf("Failed to send email: %v", err)
+			if err := sendEmailResend(contact); err != nil {
+				log.Printf("[RESEND] Failed to send email: %v", err)
 			} else {
-				log.Printf("Email sent successfully for contact: %s", contact.Email)
+				log.Printf("[RESEND] Email sent successfully for contact: %s", contact.Email)
 			}
 		}(req)
+	} else {
+		log.Printf("[EMAIL] Skipped: RESEND_API_KEY not configured")
 	}
 }
 
@@ -478,156 +475,60 @@ func getLocalResponse(message string) string {
 	return "I can help you learn about Bhavy's skills, experience, projects, or how to contact him. What would you like to know?"
 }
 
-// Send email using SMTP with detailed logging
-func sendEmail(req ContactRequest) error {
-	log.Printf("[EMAIL] Starting email send to %s", config.ToEmail)
-	log.Printf("[EMAIL] SMTP Config: host=%s, port=%s, user=%s", config.SMTPHost, config.SMTPPort, config.SMTPUser)
+// Send email via Resend HTTP API
+func sendEmailResend(req ContactRequest) error {
+	log.Printf("[RESEND] Sending email to %s", config.ToEmail)
 
 	subject := fmt.Sprintf("Portfolio Contact: %s", req.Subject)
-	body := fmt.Sprintf("Name: %s\nEmail: %s\nSubject: %s\n\nMessage:\n%s",
-		req.Name, req.Email, req.Subject, req.Message)
+	htmlBody := fmt.Sprintf(
+		"<h2>New Contact from Portfolio</h2>"+
+			"<p><strong>Name:</strong> %s</p>"+
+			"<p><strong>Email:</strong> %s</p>"+
+			"<p><strong>Subject:</strong> %s</p>"+
+			"<hr>"+
+			"<p><strong>Message:</strong></p>"+
+			"<p>%s</p>",
+		req.Name, req.Email, req.Subject, strings.ReplaceAll(req.Message, "\n", "<br>"))
 
-	msg := fmt.Sprintf(
-		"From: %s\r\n"+
-			"To: %s\r\n"+
-			"Reply-To: %s\r\n"+
-			"Subject: %s\r\n"+
-			"MIME-Version: 1.0\r\n"+
-			"Content-Type: text/plain; charset=\"UTF-8\"\r\n"+
-			"\r\n"+
-			"%s",
-		config.SMTPUser, config.ToEmail, req.Email, subject, body)
-
-	// Try port 587 (STARTTLS) first, then 465 (SSL)
-	err := sendEmailSTARTTLS(msg)
-	if err != nil {
-		log.Printf("[EMAIL] STARTTLS (port 587) failed: %v", err)
-		log.Printf("[EMAIL] Trying SSL (port 465)...")
-		err = sendEmailSSL(msg)
-		if err != nil {
-			log.Printf("[EMAIL] SSL (port 465) also failed: %v", err)
-			return err
-		}
+	// Resend API payload
+	payload := map[string]interface{}{
+		"from":     "Portfolio <onboarding@resend.dev>",
+		"to":       []string{config.ToEmail},
+		"reply_to": req.Email,
+		"subject":  subject,
+		"html":     htmlBody,
 	}
 
-	log.Printf("[EMAIL] Email sent successfully!")
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal payload: %v", err)
+	}
+
+	log.Printf("[RESEND] Sending request to Resend API...")
+
+	httpReq, err := http.NewRequest("POST", "https://api.resend.com/emails", bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %v", err)
+	}
+
+	httpReq.Header.Set("Content-Type", "application/json")
+	httpReq.Header.Set("Authorization", "Bearer "+config.ResendAPIKey)
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(httpReq)
+	if err != nil {
+		return fmt.Errorf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	respBody, _ := io.ReadAll(resp.Body)
+	log.Printf("[RESEND] Response status: %d, body: %s", resp.StatusCode, string(respBody))
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return fmt.Errorf("Resend API returned status %d: %s", resp.StatusCode, string(respBody))
+	}
+
 	return nil
-}
-
-// sendEmailSTARTTLS sends email using STARTTLS on port 587
-func sendEmailSTARTTLS(msg string) error {
-	addr := fmt.Sprintf("%s:%s", config.SMTPHost, config.SMTPPort)
-	log.Printf("[EMAIL-STARTTLS] Dialing %s...", addr)
-
-	// Connect with timeout
-	conn, err := net.DialTimeout("tcp", addr, 10*time.Second)
-	if err != nil {
-		return fmt.Errorf("connection failed: %v", err)
-	}
-	log.Printf("[EMAIL-STARTTLS] TCP connected")
-
-	// Create SMTP client
-	client, err := smtp.NewClient(conn, config.SMTPHost)
-	if err != nil {
-		conn.Close()
-		return fmt.Errorf("smtp client failed: %v", err)
-	}
-	defer client.Close()
-	log.Printf("[EMAIL-STARTTLS] SMTP client created")
-
-	// STARTTLS
-	tlsConfig := &tls.Config{ServerName: config.SMTPHost}
-	if err := client.StartTLS(tlsConfig); err != nil {
-		return fmt.Errorf("STARTTLS failed: %v", err)
-	}
-	log.Printf("[EMAIL-STARTTLS] TLS established")
-
-	// Auth
-	auth := smtp.PlainAuth("", config.SMTPUser, config.SMTPPass, config.SMTPHost)
-	if err := client.Auth(auth); err != nil {
-		return fmt.Errorf("auth failed: %v", err)
-	}
-	log.Printf("[EMAIL-STARTTLS] Authenticated")
-
-	// Set sender and recipient
-	if err := client.Mail(config.SMTPUser); err != nil {
-		return fmt.Errorf("MAIL FROM failed: %v", err)
-	}
-	if err := client.Rcpt(config.ToEmail); err != nil {
-		return fmt.Errorf("RCPT TO failed: %v", err)
-	}
-	log.Printf("[EMAIL-STARTTLS] Sender/recipient set")
-
-	// Send body
-	w, err := client.Data()
-	if err != nil {
-		return fmt.Errorf("DATA failed: %v", err)
-	}
-	_, err = w.Write([]byte(msg))
-	if err != nil {
-		return fmt.Errorf("write failed: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		return fmt.Errorf("close data failed: %v", err)
-	}
-	log.Printf("[EMAIL-STARTTLS] Message sent")
-
-	return client.Quit()
-}
-
-// sendEmailSSL sends email using direct SSL on port 465
-func sendEmailSSL(msg string) error {
-	addr := fmt.Sprintf("%s:465", config.SMTPHost)
-	log.Printf("[EMAIL-SSL] Dialing %s...", addr)
-
-	// Connect with TLS directly
-	tlsConfig := &tls.Config{ServerName: config.SMTPHost}
-	conn, err := tls.DialWithDialer(&net.Dialer{Timeout: 10 * time.Second}, "tcp", addr, tlsConfig)
-	if err != nil {
-		return fmt.Errorf("TLS connection failed: %v", err)
-	}
-	log.Printf("[EMAIL-SSL] TLS connected")
-
-	// Create SMTP client
-	client, err := smtp.NewClient(conn, config.SMTPHost)
-	if err != nil {
-		conn.Close()
-		return fmt.Errorf("smtp client failed: %v", err)
-	}
-	defer client.Close()
-	log.Printf("[EMAIL-SSL] SMTP client created")
-
-	// Auth
-	auth := smtp.PlainAuth("", config.SMTPUser, config.SMTPPass, config.SMTPHost)
-	if err := client.Auth(auth); err != nil {
-		return fmt.Errorf("auth failed: %v", err)
-	}
-	log.Printf("[EMAIL-SSL] Authenticated")
-
-	// Set sender and recipient
-	if err := client.Mail(config.SMTPUser); err != nil {
-		return fmt.Errorf("MAIL FROM failed: %v", err)
-	}
-	if err := client.Rcpt(config.ToEmail); err != nil {
-		return fmt.Errorf("RCPT TO failed: %v", err)
-	}
-	log.Printf("[EMAIL-SSL] Sender/recipient set")
-
-	// Send body
-	w, err := client.Data()
-	if err != nil {
-		return fmt.Errorf("DATA failed: %v", err)
-	}
-	_, err = w.Write([]byte(msg))
-	if err != nil {
-		return fmt.Errorf("write failed: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		return fmt.Errorf("close data failed: %v", err)
-	}
-	log.Printf("[EMAIL-SSL] Message sent")
-
-	return client.Quit()
 }
 
 // Log contact to file
