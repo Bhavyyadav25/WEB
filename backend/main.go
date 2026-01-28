@@ -234,23 +234,27 @@ func handleContact(w http.ResponseWriter, r *http.Request) {
 	// Log the contact request
 	log.Printf("New contact: %s <%s> - %s", req.Name, req.Email, req.Subject)
 
-	// Try to send email if SMTP is configured
-	if config.SMTPUser != "" && config.SMTPPass != "" {
-		if err := sendEmail(req); err != nil {
-			log.Printf("Failed to send email: %v", err)
-			// Don't return error to client, just log it
-		}
-	}
-
-	// Store contact in a simple log file
+	// Store contact in a simple log file (do this first, it's fast)
 	if err := logContact(req); err != nil {
 		log.Printf("Failed to log contact: %v", err)
 	}
 
+	// Send response immediately - don't make user wait for email
 	sendJSON(w, http.StatusOK, APIResponse{
 		Success: true,
 		Message: "Message received! I'll get back to you soon.",
 	})
+
+	// Try to send email asynchronously if SMTP is configured
+	if config.SMTPUser != "" && config.SMTPPass != "" {
+		go func(contact ContactRequest) {
+			if err := sendEmail(contact); err != nil {
+				log.Printf("Failed to send email: %v", err)
+			} else {
+				log.Printf("Email sent successfully for contact: %s", contact.Email)
+			}
+		}(req)
+	}
 }
 
 // Chat handler with AI integration
@@ -472,20 +476,33 @@ func getLocalResponse(message string) string {
 	return "I can help you learn about Bhavy's skills, experience, projects, or how to contact him. What would you like to know?"
 }
 
-// Send email using SMTP
+// Send email using SMTP with timeout
 func sendEmail(req ContactRequest) error {
-	auth := smtp.PlainAuth("", config.SMTPUser, config.SMTPPass, config.SMTPHost)
+	// Create a channel to receive the result
+	done := make(chan error, 1)
 
-	to := []string{config.ToEmail}
-	subject := fmt.Sprintf("Portfolio Contact: %s", req.Subject)
-	body := fmt.Sprintf("Name: %s\nEmail: %s\nSubject: %s\n\nMessage:\n%s",
-		req.Name, req.Email, req.Subject, req.Message)
+	go func() {
+		auth := smtp.PlainAuth("", config.SMTPUser, config.SMTPPass, config.SMTPHost)
 
-	msg := []byte(fmt.Sprintf("To: %s\r\nSubject: %s\r\n\r\n%s",
-		config.ToEmail, subject, body))
+		to := []string{config.ToEmail}
+		subject := fmt.Sprintf("Portfolio Contact: %s", req.Subject)
+		body := fmt.Sprintf("Name: %s\nEmail: %s\nSubject: %s\n\nMessage:\n%s",
+			req.Name, req.Email, req.Subject, req.Message)
 
-	addr := fmt.Sprintf("%s:%s", config.SMTPHost, config.SMTPPort)
-	return smtp.SendMail(addr, auth, config.SMTPUser, to, msg)
+		msg := []byte(fmt.Sprintf("To: %s\r\nSubject: %s\r\n\r\n%s",
+			config.ToEmail, subject, body))
+
+		addr := fmt.Sprintf("%s:%s", config.SMTPHost, config.SMTPPort)
+		done <- smtp.SendMail(addr, auth, config.SMTPUser, to, msg)
+	}()
+
+	// Wait for email to send or timeout after 10 seconds
+	select {
+	case err := <-done:
+		return err
+	case <-time.After(10 * time.Second):
+		return fmt.Errorf("email sending timed out")
+	}
 }
 
 // Log contact to file
