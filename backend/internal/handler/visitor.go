@@ -2,10 +2,10 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"sync"
 
+	"github.com/gookit/slog"
 	"github.com/gorilla/websocket"
 )
 
@@ -35,9 +35,11 @@ func (h *VisitorHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("[visitor] upgrade error: %v", err)
+		slog.Error("[visitor] WebSocket upgrade failed", "error", err, "remoteAddr", r.RemoteAddr)
 		return
 	}
+
+	slog.Debug("[visitor] New connection", "remoteAddr", r.RemoteAddr)
 
 	h.hub.register <- conn
 
@@ -52,7 +54,7 @@ func (h *VisitorHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		for {
 			if _, _, err := conn.ReadMessage(); err != nil {
 				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-					log.Printf("[visitor] read error: %v", err)
+					slog.Warn("[visitor] Unexpected close", "error", err)
 				}
 				return
 			}
@@ -85,7 +87,7 @@ func (h *visitorHub) run() {
 			h.clients[conn] = true
 			count := len(h.clients)
 			h.mu.Unlock()
-			log.Printf("[visitor] connected — total: %d", count)
+			slog.Info("[visitor] Connected", "total", count)
 			h.broadcast(count)
 
 		case conn := <-h.unregister:
@@ -96,7 +98,7 @@ func (h *visitorHub) run() {
 			}
 			count := len(h.clients)
 			h.mu.Unlock()
-			log.Printf("[visitor] disconnected — total: %d", count)
+			slog.Info("[visitor] Disconnected", "total", count)
 			h.broadcast(count)
 		}
 	}
@@ -109,7 +111,7 @@ func (h *visitorHub) broadcast(count int) {
 	msg, _ := json.Marshal(map[string]int{"count": count})
 	for conn := range h.clients {
 		if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-			log.Printf("[visitor] broadcast error: %v", err)
+			slog.Error("[visitor] Broadcast write failed", "error", err)
 			conn.Close()
 			delete(h.clients, conn)
 		}

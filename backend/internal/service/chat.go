@@ -3,10 +3,11 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gookit/slog"
 
 	"portfolio-backend/internal/model"
 )
@@ -27,7 +28,9 @@ type GroqChatService struct {
 // If apiKey is empty, all responses use the local fallback.
 func NewGroqChatService(apiKey string) *GroqChatService {
 	if apiKey == "" {
-		log.Println("[chat] Groq API key not configured; using local responses")
+		slog.Warn("[chat] Groq API key not configured; using local responses")
+	} else {
+		slog.Info("[chat] Groq chat service initialized")
 	}
 	return &GroqChatService{
 		apiKey: apiKey,
@@ -37,14 +40,19 @@ func NewGroqChatService(apiKey string) *GroqChatService {
 
 func (s *GroqChatService) GetResponse(message string, history []model.ChatMessage) (string, error) {
 	if s.apiKey == "" {
+		slog.Debug("[chat] Using local fallback", "message", message)
 		return localResponse(message), nil
 	}
 
+	slog.Debug("[chat] Calling Groq API", "message", message, "historyLen", len(history))
+
 	resp, err := s.callAPI(message, history)
 	if err != nil {
-		log.Printf("[chat] Groq API error: %v; falling back to local", err)
+		slog.Error("[chat] Groq API error; falling back to local", "error", err)
 		return localResponse(message), nil
 	}
+
+	slog.Trace("[chat] Groq response received", "responseLen", len(resp))
 	return resp, nil
 }
 

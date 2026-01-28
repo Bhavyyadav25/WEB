@@ -2,16 +2,23 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+
+	"github.com/gookit/slog"
 
 	"portfolio-backend/internal/config"
 	"portfolio-backend/internal/handler"
+	"portfolio-backend/internal/logger"
 	"portfolio-backend/internal/middleware"
 	"portfolio-backend/internal/service"
 )
 
 func main() {
+	logger.Init()
+	defer slog.MustFlush()
+
+	slog.Info("Starting Bhavy Yadav Portfolio Backend")
+
 	cfg := config.LoadFromEnv()
 
 	// Services
@@ -36,10 +43,12 @@ func main() {
 	mux.HandleFunc("/", middleware.CORS(healthH.Handle))
 
 	addr := fmt.Sprintf(":%s", cfg.Port)
-	log.Printf("Server starting on http://localhost%s", addr)
-	log.Printf("Endpoints: /api/contact, /api/chat, /api/health, /ws/visitors")
+	slog.WithData(slog.M{
+		"addr":      addr,
+		"endpoints": []string{"/api/contact", "/api/chat", "/api/health", "/ws/visitors"},
+	}).Info("Server listening")
 
 	if err := http.ListenAndServe(addr, mux); err != nil {
-		log.Fatalf("Server failed: %v", err)
+		slog.Fatal("Server failed", "error", err)
 	}
 }

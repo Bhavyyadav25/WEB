@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/gookit/slog"
 
 	"portfolio-backend/internal/model"
 )
@@ -29,7 +30,9 @@ type ResendEmailService struct {
 // If apiKey is empty, Send becomes a no-op.
 func NewResendEmailService(apiKey, toEmail string) *ResendEmailService {
 	if apiKey == "" {
-		log.Println("[email] Resend API key not configured; emails will be skipped")
+		slog.Warn("[email] Resend API key not configured; emails will be skipped")
+	} else {
+		slog.Info("[email] Resend email service initialized", "toEmail", toEmail)
 	}
 	return &ResendEmailService{
 		apiKey:  apiKey,
@@ -40,7 +43,7 @@ func NewResendEmailService(apiKey, toEmail string) *ResendEmailService {
 
 func (s *ResendEmailService) Send(req model.ContactRequest) error {
 	if s.apiKey == "" {
-		log.Println("[email] Skipped: no API key")
+		slog.Notice("[email] Skipped: no API key")
 		return nil
 	}
 
@@ -67,6 +70,8 @@ func (s *ResendEmailService) Send(req model.ContactRequest) error {
 		return fmt.Errorf("marshal payload: %w", err)
 	}
 
+	slog.Debug("[email] Sending via Resend", "to", s.toEmail, "subject", subject)
+
 	httpReq, err := http.NewRequest(http.MethodPost, "https://api.resend.com/emails", bytes.NewReader(payload))
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)
@@ -76,12 +81,16 @@ func (s *ResendEmailService) Send(req model.ContactRequest) error {
 
 	resp, err := s.client.Do(httpReq)
 	if err != nil {
+		slog.Error("[email] Request failed", "error", err)
 		return fmt.Errorf("request failed: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
-	log.Printf("[email] Resend response: status=%d body=%s", resp.StatusCode, body)
+	slog.WithData(slog.M{
+		"status": resp.StatusCode,
+		"body":   string(body),
+	}).Info("[email] Resend response")
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		return fmt.Errorf("resend returned %d: %s", resp.StatusCode, body)

@@ -2,9 +2,10 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
+
+	"github.com/gookit/slog"
 
 	"portfolio-backend/internal/httputil"
 	"portfolio-backend/internal/model"
@@ -31,6 +32,7 @@ func (h *ContactHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	var req model.ContactRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		slog.Warn("[contact] Invalid request body", "error", err)
 		httputil.SendJSON(w, http.StatusBadRequest, model.APIResponse{
 			Success: false, Message: "Invalid request body",
 		})
@@ -38,6 +40,7 @@ func (h *ContactHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.Name == "" || req.Email == "" || req.Message == "" {
+		slog.Warn("[contact] Missing required fields", "name", req.Name, "email", req.Email)
 		httputil.SendJSON(w, http.StatusBadRequest, model.APIResponse{
 			Success: false, Message: "Name, email, and message are required",
 		})
@@ -45,16 +48,21 @@ func (h *ContactHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !strings.Contains(req.Email, "@") {
+		slog.Warn("[contact] Invalid email address", "email", req.Email)
 		httputil.SendJSON(w, http.StatusBadRequest, model.APIResponse{
 			Success: false, Message: "Invalid email address",
 		})
 		return
 	}
 
-	log.Printf("New contact: %s <%s> - %s", req.Name, req.Email, req.Subject)
+	slog.WithData(slog.M{
+		"name":    req.Name,
+		"email":   req.Email,
+		"subject": req.Subject,
+	}).Info("[contact] New submission")
 
 	if err := h.logger.Log(req); err != nil {
-		log.Printf("Failed to log contact: %v", err)
+		slog.Error("[contact] Failed to log contact", "error", err)
 	}
 
 	// Respond immediately; send email in background.
@@ -64,9 +72,9 @@ func (h *ContactHandler) Handle(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		if err := h.email.Send(req); err != nil {
-			log.Printf("Failed to send email: %v", err)
+			slog.Error("[contact] Failed to send email", "error", err, "email", req.Email)
 		} else {
-			log.Printf("Email sent for contact: %s", req.Email)
+			slog.Info("[contact] Email sent successfully", "email", req.Email)
 		}
 	}()
 }

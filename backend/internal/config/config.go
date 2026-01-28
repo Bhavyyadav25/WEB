@@ -1,8 +1,9 @@
 package config
 
 import (
-	"log"
 	"os"
+
+	"github.com/gookit/slog"
 )
 
 // Config holds application configuration loaded from environment variables.
@@ -22,8 +23,12 @@ func LoadFromEnv() Config {
 		ResendAPIKey: getEnv("RESEND_API_KEY", ""),
 	}
 
-	log.Printf("Config loaded: port=%s, toEmail=%s, groq=%v, resend=%v",
-		cfg.Port, cfg.ToEmail, cfg.GroqAPIKey != "", cfg.ResendAPIKey != "")
+	slog.WithData(slog.M{
+		"port":    cfg.Port,
+		"toEmail": cfg.ToEmail,
+		"groq":    cfg.GroqAPIKey != "",
+		"resend":  cfg.ResendAPIKey != "",
+	}).Info("Config loaded")
 
 	return cfg
 }
