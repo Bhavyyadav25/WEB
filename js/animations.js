@@ -707,34 +707,58 @@ class Animations {
         // Create audio context (enabled by default)
         let audioContext = null;
         let soundEnabled = true;
+        let audioInitialized = false;
+
+        // Add visual hint that sound needs activation
+        soundToggle.classList.add('needs-activation');
 
         // Initialize audio context on first user interaction
         const initAudioContext = () => {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioContext && soundEnabled) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    audioInitialized = true;
+                    soundToggle.classList.remove('needs-activation');
+                    // Play a subtle activation sound
+                    createSound(800, 0.1);
+                } catch (e) {
+                    console.error('Failed to create audio context:', e);
+                }
             }
         };
 
-        // Initialize on first click anywhere
-        document.addEventListener('click', initAudioContext, { once: true });
+        // Initialize on earliest user activation events
+        const activationEvents = ['mousedown', 'touchstart', 'keydown'];
+        activationEvents.forEach(event => {
+            document.addEventListener(event, initAudioContext, { once: true });
+        });
 
         const createSound = (frequency, duration, type = 'sine') => {
             if (!soundEnabled || !audioContext) return;
 
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            try {
+                // Resume audio context if suspended
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
 
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
 
-            oscillator.frequency.value = frequency;
-            oscillator.type = type;
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
 
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
 
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            } catch (e) {
+                // Silently fail if audio doesn't work
+            }
         };
 
         // Toggle sound
@@ -744,6 +768,8 @@ class Animations {
 
             if (soundEnabled && !audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioInitialized = true;
+                soundToggle.classList.remove('needs-activation');
             }
 
             if (soundEnabled) {

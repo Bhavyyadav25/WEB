@@ -275,6 +275,42 @@ a, button, .btn, .project-card, .skill-tag, .blog-card,
     display: block;
 }
 
+/* Sound needs activation hint */
+.sound-toggle.needs-activation {
+    animation: pulse-hint 2s ease-in-out infinite;
+}
+
+.sound-toggle.needs-activation::after {
+    content: 'Click to enable sound';
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-elevated);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-base);
+}
+
+.sound-toggle.needs-activation:hover::after {
+    opacity: 1;
+}
+
+@keyframes pulse-hint {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+    }
+}
+
 /* Download CV Button */
 /* Ensure hero CTA buttons are always visible */
 .hero-cta .btn {
