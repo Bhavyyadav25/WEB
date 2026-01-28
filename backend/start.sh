@@ -28,4 +28,4 @@ echo ""
 
 # Start the server
 echo "Starting server..."
-go run main.go
+go run ./cmd/server/

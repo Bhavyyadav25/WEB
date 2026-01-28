@@ -3,17 +3,17 @@ FROM golang:1.21-alpine AS builder
 
 WORKDIR /app
 
-# Copy go mod file
-COPY go.mod ./
+# Copy dependency files
+COPY go.mod go.sum ./
 
-# Download dependencies (none for now, but good practice)
+# Download dependencies
 RUN go mod download
 
 # Copy source code
 COPY . .
 
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o server main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/server/
 
 # Runtime stage
 FROM alpine:latest
