@@ -699,12 +699,11 @@ class Animations {
         });
     }
 
-    // Sound Effects
+    // Sound Effects - Soft & Subtle with Variations
     initSoundEffects() {
         const soundToggle = document.getElementById('sound-toggle');
         if (!soundToggle) return;
 
-        // Create audio context (enabled by default)
         let audioContext = null;
         let soundEnabled = true;
         let audioInitialized = false;
@@ -719,8 +718,8 @@ class Animations {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     audioInitialized = true;
                     soundToggle.classList.remove('needs-activation');
-                    // Play a subtle activation sound
-                    createSound(800, 0.1);
+                    // Play soft activation sound
+                    playToggleSound();
                 } catch (e) {
                     console.error('Failed to create audio context:', e);
                 }
@@ -733,14 +732,11 @@ class Animations {
             document.addEventListener(event, initAudioContext, { once: true });
         });
 
-        const createSound = (frequency, duration, type = 'sine') => {
+        // Soft hover sound - gentle high-pitched whisper
+        const playHoverSound = () => {
             if (!soundEnabled || !audioContext) return;
-
             try {
-                // Resume audio context if suspended
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume();
-                }
+                if (audioContext.state === 'suspended') audioContext.resume();
 
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
@@ -748,21 +744,128 @@ class Animations {
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
 
-                oscillator.frequency.value = frequency;
-                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1800, audioContext.currentTime + 0.05);
+                oscillator.type = 'sine';
 
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                gainNode.gain.setValueAtTime(0.03, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
 
                 oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + duration);
-            } catch (e) {
-                // Silently fail if audio doesn't work
-            }
+                oscillator.stop(audioContext.currentTime + 0.05);
+            } catch (e) {}
         };
 
-        // Toggle sound
-        soundToggle.addEventListener('click', () => {
+        // Soft click sound - gentle tap
+        const playClickSound = () => {
+            if (!soundEnabled || !audioContext) return;
+            try {
+                if (audioContext.state === 'suspended') audioContext.resume();
+
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.08);
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.06, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.08);
+            } catch (e) {}
+        };
+
+        // Toggle sound - soft confirmation
+        const playToggleSound = () => {
+            if (!soundEnabled || !audioContext) return;
+            try {
+                if (audioContext.state === 'suspended') audioContext.resume();
+
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(900, audioContext.currentTime + 0.06);
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.12);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.12);
+            } catch (e) {}
+        };
+
+        // Success sound - gentle pleasant chime
+        const playSuccessSound = () => {
+            if (!soundEnabled || !audioContext) return;
+            try {
+                if (audioContext.state === 'suspended') audioContext.resume();
+
+                const playNote = (freq, startTime, duration) => {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+
+                    osc.frequency.value = freq;
+                    osc.type = 'sine';
+
+                    gain.gain.setValueAtTime(0.04, audioContext.currentTime + startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + startTime + duration);
+
+                    osc.start(audioContext.currentTime + startTime);
+                    osc.stop(audioContext.currentTime + startTime + duration);
+                };
+
+                // Gentle ascending chime (C5 - E5 - G5)
+                playNote(523, 0, 0.15);
+                playNote(659, 0.08, 0.15);
+                playNote(784, 0.16, 0.25);
+            } catch (e) {}
+        };
+
+        // Navigation sound - soft whoosh
+        const playNavSound = () => {
+            if (!soundEnabled || !audioContext) return;
+            try {
+                if (audioContext.state === 'suspended') audioContext.resume();
+
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                const filter = audioContext.createBiquadFilter();
+
+                oscillator.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.1);
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(1000, audioContext.currentTime);
+
+                gainNode.gain.setValueAtTime(0.04, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {}
+        };
+
+        // Toggle sound button
+        soundToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             soundEnabled = !soundEnabled;
             soundToggle.classList.toggle('muted', !soundEnabled);
 
@@ -773,30 +876,30 @@ class Animations {
             }
 
             if (soundEnabled) {
-                createSound(800, 0.1);
+                playToggleSound();
             }
         });
 
-        // Add hover sounds
-        const hoverElements = document.querySelectorAll('a, button, .project-card, .skill-tag');
+        // Hover sounds for interactive elements
+        const hoverElements = document.querySelectorAll('a, button, .project-card, .skill-tag, .blog-card, .timeline-content');
         hoverElements.forEach(el => {
-            el.addEventListener('mouseenter', () => createSound(600, 0.05));
+            el.addEventListener('mouseenter', playHoverSound);
         });
 
-        // Add click sounds
+        // Click sounds
         document.addEventListener('click', (e) => {
-            if (e.target.matches('a, button, .btn')) {
-                createSound(400, 0.1);
+            if (e.target.closest('a, button, .btn, .project-card, .blog-card')) {
+                playClickSound();
             }
         });
 
-        // Store for form submit
-        window.playSuccessSound = () => {
-            if (soundEnabled && audioContext) {
-                createSound(523, 0.1); // C
-                setTimeout(() => createSound(659, 0.1), 100); // E
-                setTimeout(() => createSound(784, 0.2), 200); // G
-            }
+        // Navigation sounds for section changes
+        document.querySelectorAll('.nav-link, .mobile-link').forEach(link => {
+            link.addEventListener('click', playNavSound);
+        });
+
+        // Store success sound globally for form submit
+        window.playSuccessSound = playSuccessSound;
         };
     }
 
