@@ -489,8 +489,16 @@ func sendEmail(req ContactRequest) error {
 		body := fmt.Sprintf("Name: %s\nEmail: %s\nSubject: %s\n\nMessage:\n%s",
 			req.Name, req.Email, req.Subject, req.Message)
 
-		msg := []byte(fmt.Sprintf("To: %s\r\nSubject: %s\r\n\r\n%s",
-			config.ToEmail, subject, body))
+		msg := []byte(fmt.Sprintf(
+			"From: %s\r\n"+
+				"To: %s\r\n"+
+				"Reply-To: %s\r\n"+
+				"Subject: %s\r\n"+
+				"MIME-Version: 1.0\r\n"+
+				"Content-Type: text/plain; charset=\"UTF-8\"\r\n"+
+				"\r\n"+
+				"%s",
+			config.SMTPUser, config.ToEmail, req.Email, subject, body))
 
 		addr := fmt.Sprintf("%s:%s", config.SMTPHost, config.SMTPPort)
 		done <- smtp.SendMail(addr, auth, config.SMTPUser, to, msg)
