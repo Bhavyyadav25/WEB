@@ -900,7 +900,6 @@ class Animations {
 
         // Store success sound globally for form submit
         window.playSuccessSound = playSuccessSound;
-        };
     }
 
     // Page Transitions
