@@ -239,24 +239,29 @@ class App {
         });
     }
 
-    // Scroll Reveal Animation
+    // Scroll Reveal Animation (throttled)
     initScrollReveal() {
         const revealElements = document.querySelectorAll('.reveal');
+        let ticking = false;
 
         const revealOnScroll = () => {
-            const windowHeight = window.innerHeight;
-
-            revealElements.forEach(el => {
-                const elementTop = el.getBoundingClientRect().top;
-                const revealPoint = 150;
-
-                if (elementTop < windowHeight - revealPoint) {
-                    el.classList.add('active');
-                }
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const windowHeight = window.innerHeight;
+                revealElements.forEach(el => {
+                    if (!el.classList.contains('active')) {
+                        const elementTop = el.getBoundingClientRect().top;
+                        if (elementTop < windowHeight - 150) {
+                            el.classList.add('active');
+                        }
+                    }
+                });
+                ticking = false;
             });
         };
 
-        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('scroll', revealOnScroll, { passive: true });
         revealOnScroll(); // Initial check
     }
 

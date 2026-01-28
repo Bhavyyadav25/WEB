@@ -201,24 +201,31 @@ class Animations {
             });
         });
 
-        // Active link on scroll
+        // Active link on scroll (throttled)
         const sections = document.querySelectorAll('section[id]');
+        let scrollTicking = false;
         window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (window.scrollY >= sectionTop - 200) {
-                    current = section.getAttribute('id');
-                }
-            });
+            if (!scrollTicking) {
+                requestAnimationFrame(() => {
+                    let current = '';
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        if (window.scrollY >= sectionTop - 200) {
+                            current = section.getAttribute('id');
+                        }
+                    });
 
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('data-section') === current) {
-                    link.classList.add('active');
-                }
-            });
-        });
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('data-section') === current) {
+                            link.classList.add('active');
+                        }
+                    });
+                    scrollTicking = false;
+                });
+                scrollTicking = true;
+            }
+        }, { passive: true });
     }
 
     // Hero Section Entrance
@@ -691,12 +698,18 @@ class Animations {
         const progressBar = document.getElementById('scroll-progress');
         if (!progressBar) return;
 
+        let ticking = false;
         window.addEventListener('scroll', () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = (scrollTop / docHeight) * 100;
-            progressBar.style.width = `${progress}%`;
-        });
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const scrollTop = window.scrollY;
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    progressBar.style.width = `${(scrollTop / docHeight) * 100}%`;
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
     }
 
     // Sound Effects - Soft & Subtle with Variations
@@ -1223,13 +1236,15 @@ class Animations {
         let reconnectAttempts = 0;
         const maxReconnectAttempts = 5;
         let reconnectTimeout = null;
+        let activeWs = null;
+        let fallbackInterval = null;
 
         const connectWebSocket = () => {
             try {
                 const ws = new WebSocket(wsUrl);
+                activeWs = ws;
 
                 ws.onopen = () => {
-                    console.log('Live visitors WebSocket connected');
                     reconnectAttempts = 0;
                 };
 
@@ -1237,20 +1252,13 @@ class Animations {
                     try {
                         const data = JSON.parse(event.data);
                         if (data.count !== undefined) {
-                            gsap.to(visitorCountEl, {
-                                innerHTML: data.count,
-                                duration: 0.3,
-                                snap: { innerHTML: 1 }
-                            });
+                            visitorCountEl.textContent = data.count;
                         }
-                    } catch (e) {
-                        console.error('Error parsing visitor count:', e);
-                    }
+                    } catch (e) {}
                 };
 
                 ws.onclose = () => {
-                    console.log('Live visitors WebSocket closed');
-                    // Attempt to reconnect with exponential backoff
+                    activeWs = null;
                     if (reconnectAttempts < maxReconnectAttempts) {
                         const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
                         reconnectTimeout = setTimeout(() => {
@@ -1258,18 +1266,13 @@ class Animations {
                             connectWebSocket();
                         }, delay);
                     } else {
-                        // Fallback to simulated count after max attempts
-                        console.log('Max reconnect attempts reached, using simulated count');
                         simulateFallback();
                     }
                 };
 
-                ws.onerror = (error) => {
-                    console.error('WebSocket error:', error);
-                };
+                ws.onerror = () => {};
 
             } catch (error) {
-                console.error('Failed to create WebSocket:', error);
                 simulateFallback();
             }
         };
@@ -1279,16 +1282,19 @@ class Animations {
             let count = Math.floor(Math.random() * 5) + 2;
             visitorCountEl.textContent = count;
 
-            setInterval(() => {
+            fallbackInterval = setInterval(() => {
                 const change = Math.random() > 0.5 ? 1 : -1;
                 count = Math.max(1, Math.min(12, count + change));
-                gsap.to(visitorCountEl, {
-                    innerHTML: count,
-                    duration: 0.3,
-                    snap: { innerHTML: 1 }
-                });
+                visitorCountEl.textContent = count;
             }, 30000 + Math.random() * 30000);
         };
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (reconnectTimeout) clearTimeout(reconnectTimeout);
+            if (fallbackInterval) clearInterval(fallbackInterval);
+            if (activeWs) activeWs.close();
+        });
 
         // Start WebSocket connection
         connectWebSocket();

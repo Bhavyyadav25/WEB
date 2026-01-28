@@ -1,6 +1,7 @@
 /**
  * Three.js Background Scene
  * Creates an immersive particle system with interactive effects
+ * Optimized: pauses when tab hidden, disposes on unload
  */
 
 class ThreeScene {
@@ -21,6 +22,8 @@ class ThreeScene {
         this.targetMouseX = 0;
         this.targetMouseY = 0;
         this.clock = new THREE.Clock();
+        this.animationId = null;
+        this.isVisible = true;
 
         this.init();
     }
@@ -40,13 +43,29 @@ class ThreeScene {
         // Create geometric shapes
         this.createGeometry();
 
-        // Add floating orbs
+        // Create floating orbs
         this.createOrbs();
 
-        // Event listeners
-        window.addEventListener('resize', () => this.onResize());
-        window.addEventListener('mousemove', (e) => this.onMouseMove(e));
-        window.addEventListener('scroll', () => this.onScroll());
+        // Event listeners (bound so we can remove them)
+        this._onResize = () => this.onResize();
+        this._onMouseMove = (e) => this.onMouseMove(e);
+        this._onScroll = () => this.onScroll();
+
+        window.addEventListener('resize', this._onResize);
+        window.addEventListener('mousemove', this._onMouseMove, { passive: true });
+        window.addEventListener('scroll', this._onScroll, { passive: true });
+
+        // Pause when tab is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pause();
+            } else {
+                this.resume();
+            }
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => this.dispose());
 
         // Start animation
         this.animate();
@@ -58,26 +77,22 @@ class ThreeScene {
         const colors = new Float32Array(this.particleCount * 3);
         const sizes = new Float32Array(this.particleCount);
 
-        const color1 = new THREE.Color(0x6366f1); // Primary accent
-        const color2 = new THREE.Color(0x8b5cf6); // Secondary accent
-        const color3 = new THREE.Color(0x06b6d4); // Cyan accent
+        const color1 = new THREE.Color(0x6366f1);
+        const color2 = new THREE.Color(0x8b5cf6);
+        const color3 = new THREE.Color(0x06b6d4);
 
         for (let i = 0; i < this.particleCount; i++) {
             const i3 = i * 3;
-
-            // Position
             positions[i3] = (Math.random() - 0.5) * 200;
             positions[i3 + 1] = (Math.random() - 0.5) * 200;
             positions[i3 + 2] = (Math.random() - 0.5) * 200;
 
-            // Color - mix between accent colors
             const mixRatio = Math.random();
             const selectedColor = mixRatio < 0.33 ? color1 : mixRatio < 0.66 ? color2 : color3;
             colors[i3] = selectedColor.r;
             colors[i3 + 1] = selectedColor.g;
             colors[i3 + 2] = selectedColor.b;
 
-            // Size
             sizes[i] = Math.random() * 2 + 0.5;
         }
 
@@ -85,7 +100,6 @@ class ThreeScene {
         geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
         geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-        // Shader material for particles
         const material = new THREE.ShaderMaterial({
             uniforms: {
                 uTime: { value: 0 },
@@ -102,38 +116,26 @@ class ThreeScene {
 
                 void main() {
                     vColor = color;
-
                     vec3 pos = position;
-
-                    // Wave effect
                     pos.y += sin(pos.x * 0.05 + uTime * 0.5) * 2.0;
                     pos.x += cos(pos.y * 0.05 + uTime * 0.3) * 2.0;
 
-                    // Mouse influence
                     float distanceToMouse = length(pos.xy - uMouse * 50.0);
                     float mouseInfluence = 1.0 - smoothstep(0.0, 30.0, distanceToMouse);
                     pos.z += mouseInfluence * 10.0;
 
                     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
                     gl_Position = projectionMatrix * mvPosition;
-
-                    // Size attenuation
                     gl_PointSize = size * uPixelRatio * (100.0 / -mvPosition.z);
                 }
             `,
             fragmentShader: `
                 varying vec3 vColor;
-
                 void main() {
-                    // Circular particle
                     vec2 center = gl_PointCoord - 0.5;
                     float dist = length(center);
-
                     if (dist > 0.5) discard;
-
-                    // Soft edges
                     float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
-
                     gl_FragColor = vec4(vColor, alpha * 0.8);
                 }
             `,
@@ -147,37 +149,25 @@ class ThreeScene {
     }
 
     createGeometry() {
-        // Wireframe torus
         const torusGeometry = new THREE.TorusGeometry(15, 5, 16, 100);
         const torusMaterial = new THREE.MeshBasicMaterial({
-            color: 0x6366f1,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.1
+            color: 0x6366f1, wireframe: true, transparent: true, opacity: 0.1
         });
         this.torus = new THREE.Mesh(torusGeometry, torusMaterial);
         this.torus.position.set(40, 20, -30);
         this.scene.add(this.torus);
 
-        // Wireframe icosahedron
         const icoGeometry = new THREE.IcosahedronGeometry(12, 1);
         const icoMaterial = new THREE.MeshBasicMaterial({
-            color: 0x8b5cf6,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.1
+            color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.1
         });
         this.icosahedron = new THREE.Mesh(icoGeometry, icoMaterial);
         this.icosahedron.position.set(-40, -20, -20);
         this.scene.add(this.icosahedron);
 
-        // Wireframe octahedron
         const octGeometry = new THREE.OctahedronGeometry(10, 0);
         const octMaterial = new THREE.MeshBasicMaterial({
-            color: 0x06b6d4,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.1
+            color: 0x06b6d4, wireframe: true, transparent: true, opacity: 0.1
         });
         this.octahedron = new THREE.Mesh(octGeometry, octMaterial);
         this.octahedron.position.set(30, -30, -40);
@@ -235,21 +225,35 @@ class ThreeScene {
         const maxScroll = document.body.scrollHeight - window.innerHeight;
         const scrollProgress = scrollY / maxScroll;
 
-        // Rotate camera based on scroll
         this.camera.position.y = -scrollProgress * 30;
         this.camera.rotation.x = scrollProgress * 0.3;
     }
 
+    pause() {
+        this.isVisible = false;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
+    }
+
+    resume() {
+        if (!this.isVisible) {
+            this.isVisible = true;
+            this.animate();
+        }
+    }
+
     animate() {
-        requestAnimationFrame(() => this.animate());
+        if (!this.isVisible) return;
+
+        this.animationId = requestAnimationFrame(() => this.animate());
 
         const elapsedTime = this.clock.getElapsedTime();
 
-        // Smooth mouse movement
         this.mouseX += (this.targetMouseX - this.mouseX) * 0.05;
         this.mouseY += (this.targetMouseY - this.mouseY) * 0.05;
 
-        // Update particles
         if (this.particles) {
             this.particles.material.uniforms.uTime.value = elapsedTime;
             this.particles.material.uniforms.uMouse.value.set(this.mouseX, this.mouseY);
@@ -257,7 +261,6 @@ class ThreeScene {
             this.particles.rotation.x = this.mouseY * 0.1;
         }
 
-        // Rotate geometric shapes
         if (this.torus) {
             this.torus.rotation.x = elapsedTime * 0.1;
             this.torus.rotation.y = elapsedTime * 0.15;
@@ -273,18 +276,39 @@ class ThreeScene {
             this.octahedron.rotation.z = elapsedTime * 0.1;
         }
 
-        // Animate orbs
         this.orbs.forEach((orb) => {
-            const { speed, amplitude, phase } = orb.userData;
+            const { speed, phase } = orb.userData;
             orb.position.y += Math.sin(elapsedTime * speed + phase) * 0.05;
             orb.position.x += Math.cos(elapsedTime * speed * 0.5 + phase) * 0.03;
         });
 
-        // Camera follows mouse slightly
         this.camera.position.x = this.mouseX * 5;
         this.camera.lookAt(0, 0, 0);
 
         this.renderer.render(this.scene, this.camera);
+    }
+
+    dispose() {
+        this.pause();
+
+        window.removeEventListener('resize', this._onResize);
+        window.removeEventListener('mousemove', this._onMouseMove);
+        window.removeEventListener('scroll', this._onScroll);
+
+        // Dispose all geometries and materials
+        this.scene.traverse((obj) => {
+            if (obj.geometry) obj.geometry.dispose();
+            if (obj.material) {
+                if (Array.isArray(obj.material)) {
+                    obj.material.forEach(m => m.dispose());
+                } else {
+                    obj.material.dispose();
+                }
+            }
+        });
+
+        this.renderer.dispose();
+        this.renderer.forceContextLoss();
     }
 }
 
