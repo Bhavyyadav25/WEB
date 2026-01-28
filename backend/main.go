@@ -1,9 +1,11 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"net/smtp"
 	"os"
@@ -476,41 +478,156 @@ func getLocalResponse(message string) string {
 	return "I can help you learn about Bhavy's skills, experience, projects, or how to contact him. What would you like to know?"
 }
 
-// Send email using SMTP with timeout
+// Send email using SMTP with detailed logging
 func sendEmail(req ContactRequest) error {
-	// Create a channel to receive the result
-	done := make(chan error, 1)
+	log.Printf("[EMAIL] Starting email send to %s", config.ToEmail)
+	log.Printf("[EMAIL] SMTP Config: host=%s, port=%s, user=%s", config.SMTPHost, config.SMTPPort, config.SMTPUser)
 
-	go func() {
-		auth := smtp.PlainAuth("", config.SMTPUser, config.SMTPPass, config.SMTPHost)
+	subject := fmt.Sprintf("Portfolio Contact: %s", req.Subject)
+	body := fmt.Sprintf("Name: %s\nEmail: %s\nSubject: %s\n\nMessage:\n%s",
+		req.Name, req.Email, req.Subject, req.Message)
 
-		to := []string{config.ToEmail}
-		subject := fmt.Sprintf("Portfolio Contact: %s", req.Subject)
-		body := fmt.Sprintf("Name: %s\nEmail: %s\nSubject: %s\n\nMessage:\n%s",
-			req.Name, req.Email, req.Subject, req.Message)
+	msg := fmt.Sprintf(
+		"From: %s\r\n"+
+			"To: %s\r\n"+
+			"Reply-To: %s\r\n"+
+			"Subject: %s\r\n"+
+			"MIME-Version: 1.0\r\n"+
+			"Content-Type: text/plain; charset=\"UTF-8\"\r\n"+
+			"\r\n"+
+			"%s",
+		config.SMTPUser, config.ToEmail, req.Email, subject, body)
 
-		msg := []byte(fmt.Sprintf(
-			"From: %s\r\n"+
-				"To: %s\r\n"+
-				"Reply-To: %s\r\n"+
-				"Subject: %s\r\n"+
-				"MIME-Version: 1.0\r\n"+
-				"Content-Type: text/plain; charset=\"UTF-8\"\r\n"+
-				"\r\n"+
-				"%s",
-			config.SMTPUser, config.ToEmail, req.Email, subject, body))
-
-		addr := fmt.Sprintf("%s:%s", config.SMTPHost, config.SMTPPort)
-		done <- smtp.SendMail(addr, auth, config.SMTPUser, to, msg)
-	}()
-
-	// Wait for email to send or timeout after 10 seconds
-	select {
-	case err := <-done:
-		return err
-	case <-time.After(10 * time.Second):
-		return fmt.Errorf("email sending timed out")
+	// Try port 587 (STARTTLS) first, then 465 (SSL)
+	err := sendEmailSTARTTLS(msg)
+	if err != nil {
+		log.Printf("[EMAIL] STARTTLS (port 587) failed: %v", err)
+		log.Printf("[EMAIL] Trying SSL (port 465)...")
+		err = sendEmailSSL(msg)
+		if err != nil {
+			log.Printf("[EMAIL] SSL (port 465) also failed: %v", err)
+			return err
+		}
 	}
+
+	log.Printf("[EMAIL] Email sent successfully!")
+	return nil
+}
+
+// sendEmailSTARTTLS sends email using STARTTLS on port 587
+func sendEmailSTARTTLS(msg string) error {
+	addr := fmt.Sprintf("%s:%s", config.SMTPHost, config.SMTPPort)
+	log.Printf("[EMAIL-STARTTLS] Dialing %s...", addr)
+
+	// Connect with timeout
+	conn, err := net.DialTimeout("tcp", addr, 10*time.Second)
+	if err != nil {
+		return fmt.Errorf("connection failed: %v", err)
+	}
+	log.Printf("[EMAIL-STARTTLS] TCP connected")
+
+	// Create SMTP client
+	client, err := smtp.NewClient(conn, config.SMTPHost)
+	if err != nil {
+		conn.Close()
+		return fmt.Errorf("smtp client failed: %v", err)
+	}
+	defer client.Close()
+	log.Printf("[EMAIL-STARTTLS] SMTP client created")
+
+	// STARTTLS
+	tlsConfig := &tls.Config{ServerName: config.SMTPHost}
+	if err := client.StartTLS(tlsConfig); err != nil {
+		return fmt.Errorf("STARTTLS failed: %v", err)
+	}
+	log.Printf("[EMAIL-STARTTLS] TLS established")
+
+	// Auth
+	auth := smtp.PlainAuth("", config.SMTPUser, config.SMTPPass, config.SMTPHost)
+	if err := client.Auth(auth); err != nil {
+		return fmt.Errorf("auth failed: %v", err)
+	}
+	log.Printf("[EMAIL-STARTTLS] Authenticated")
+
+	// Set sender and recipient
+	if err := client.Mail(config.SMTPUser); err != nil {
+		return fmt.Errorf("MAIL FROM failed: %v", err)
+	}
+	if err := client.Rcpt(config.ToEmail); err != nil {
+		return fmt.Errorf("RCPT TO failed: %v", err)
+	}
+	log.Printf("[EMAIL-STARTTLS] Sender/recipient set")
+
+	// Send body
+	w, err := client.Data()
+	if err != nil {
+		return fmt.Errorf("DATA failed: %v", err)
+	}
+	_, err = w.Write([]byte(msg))
+	if err != nil {
+		return fmt.Errorf("write failed: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("close data failed: %v", err)
+	}
+	log.Printf("[EMAIL-STARTTLS] Message sent")
+
+	return client.Quit()
+}
+
+// sendEmailSSL sends email using direct SSL on port 465
+func sendEmailSSL(msg string) error {
+	addr := fmt.Sprintf("%s:465", config.SMTPHost)
+	log.Printf("[EMAIL-SSL] Dialing %s...", addr)
+
+	// Connect with TLS directly
+	tlsConfig := &tls.Config{ServerName: config.SMTPHost}
+	conn, err := tls.DialWithDialer(&net.Dialer{Timeout: 10 * time.Second}, "tcp", addr, tlsConfig)
+	if err != nil {
+		return fmt.Errorf("TLS connection failed: %v", err)
+	}
+	log.Printf("[EMAIL-SSL] TLS connected")
+
+	// Create SMTP client
+	client, err := smtp.NewClient(conn, config.SMTPHost)
+	if err != nil {
+		conn.Close()
+		return fmt.Errorf("smtp client failed: %v", err)
+	}
+	defer client.Close()
+	log.Printf("[EMAIL-SSL] SMTP client created")
+
+	// Auth
+	auth := smtp.PlainAuth("", config.SMTPUser, config.SMTPPass, config.SMTPHost)
+	if err := client.Auth(auth); err != nil {
+		return fmt.Errorf("auth failed: %v", err)
+	}
+	log.Printf("[EMAIL-SSL] Authenticated")
+
+	// Set sender and recipient
+	if err := client.Mail(config.SMTPUser); err != nil {
+		return fmt.Errorf("MAIL FROM failed: %v", err)
+	}
+	if err := client.Rcpt(config.ToEmail); err != nil {
+		return fmt.Errorf("RCPT TO failed: %v", err)
+	}
+	log.Printf("[EMAIL-SSL] Sender/recipient set")
+
+	// Send body
+	w, err := client.Data()
+	if err != nil {
+		return fmt.Errorf("DATA failed: %v", err)
+	}
+	_, err = w.Write([]byte(msg))
+	if err != nil {
+		return fmt.Errorf("write failed: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("close data failed: %v", err)
+	}
+	log.Printf("[EMAIL-SSL] Message sent")
+
+	return client.Quit()
 }
 
 // Log contact to file
