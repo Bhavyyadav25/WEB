@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -30,7 +31,7 @@ func NewGroqChatService(apiKey string) *GroqChatService {
 	if apiKey == "" {
 		slog.Warn("[chat] Groq API key not configured; using local responses")
 	} else {
-		slog.Info("[chat] Groq chat service initialized")
+		slog.Info("[chat] Groq chat service initialized", "keyLen", len(apiKey))
 	}
 	return &GroqChatService{
 		apiKey: apiKey,
@@ -44,7 +45,7 @@ func (s *GroqChatService) GetResponse(message string, history []model.ChatMessag
 		return localResponse(message), nil
 	}
 
-	slog.Debug("[chat] Calling Groq API", "message", message, "historyLen", len(history))
+	slog.Debug("[chat] Calling Groq API", "message", message, "historyLen", len(history), "model", "llama3-8b-8192")
 
 	resp, err := s.callAPI(message, history)
 	if err != nil {
@@ -81,7 +82,12 @@ func (s *GroqChatService) callAPI(message string, history []model.ChatMessage) (
 		{"role": "system", "content": systemPrompt},
 	}
 	for _, h := range history {
-		messages = append(messages, map[string]string{"role": h.Role, "content": h.Content})
+		role := h.Role
+		if role != "user" && role != "assistant" {
+			slog.Warn("[chat] Skipping history entry with invalid role", "role", role, "content", h.Content)
+			continue
+		}
+		messages = append(messages, map[string]string{"role": role, "content": h.Content})
 	}
 	messages = append(messages, map[string]string{"role": "user", "content": message})
 
@@ -111,7 +117,13 @@ func (s *GroqChatService) callAPI(message string, history []model.ChatMessage) (
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("groq returned status %d", resp.StatusCode)
+		respBody, _ := io.ReadAll(resp.Body)
+		slog.Error("[chat] Groq API non-OK response",
+			"status", resp.StatusCode,
+			"body", string(respBody),
+			"messageCount", len(messages),
+		)
+		return "", fmt.Errorf("groq returned status %d: %s", resp.StatusCode, string(respBody))
 	}
 
 	var result struct {
