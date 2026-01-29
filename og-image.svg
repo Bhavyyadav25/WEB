@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#818cf8"/>
+    </linearGradient>
+    <linearGradient id="subtle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:#818cf8;stop-opacity:0.05"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0a0a0b"/>
+
+  <!-- Subtle gradient strip at top -->
+  <rect width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- Decorative circle -->
+  <circle cx="1050" cy="150" r="200" fill="url(#subtle)"/>
+  <circle cx="150" cy="500" r="150" fill="url(#subtle)"/>
+
+  <!-- BY Logo -->
+  <text x="100" y="220" font-family="Inter, Helvetica, Arial, sans-serif" font-size="96" font-weight="800" fill="url(#accent)">BY</text>
+
+  <!-- Name -->
+  <text x="100" y="320" font-family="Inter, Helvetica, Arial, sans-serif" font-size="56" font-weight="700" fill="#fafafa">Bhavy Yadav</text>
+
+  <!-- Title -->
+  <text x="100" y="385" font-family="Inter, Helvetica, Arial, sans-serif" font-size="30" font-weight="400" fill="#a1a1aa">Software Development Engineer</text>
+
+  <!-- Divider -->
+  <rect x="100" y="415" width="80" height="3" rx="2" fill="url(#accent)"/>
+
+  <!-- Skills -->
+  <text x="100" y="470" font-family="JetBrains Mono, monospace" font-size="22" font-weight="500" fill="#6366f1">Go · Java · Python · Microservices · Cybersecurity</text>
+
+  <!-- Tagline -->
+  <text x="100" y="520" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" font-weight="400" fill="#71717a">IIT Delhi · Clickpost · 100K+ daily requests</text>
+
+  <!-- Bottom border -->
+  <rect y="626" width="1200" height="4" fill="url(#accent)"/>
+</svg>
