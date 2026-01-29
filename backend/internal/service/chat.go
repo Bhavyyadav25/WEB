@@ -45,7 +45,7 @@ func (s *GroqChatService) GetResponse(message string, history []model.ChatMessag
 		return localResponse(message), nil
 	}
 
-	slog.Debug("[chat] Calling Groq API", "message", message, "historyLen", len(history), "model", "llama3-8b-8192")
+	slog.Debug("[chat] Calling Groq API", "message", message, "historyLen", len(history), "model", "llama-3.1-8b-instant")
 
 	resp, err := s.callAPI(message, history)
 	if err != nil {
@@ -92,7 +92,7 @@ func (s *GroqChatService) callAPI(message string, history []model.ChatMessage) (
 	messages = append(messages, map[string]string{"role": "user", "content": message})
 
 	body := map[string]any{
-		"model":       "llama3-8b-8192",
+		"model":       "llama-3.1-8b-instant",
 		"messages":    messages,
 		"temperature": 0.7,
 		"max_tokens":  500,
