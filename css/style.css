@@ -2567,6 +2567,11 @@ section {
     grid-template-columns: 1fr 1.5fr;
 }
 
+.blog-grid-published .blog-card.featured {
+    grid-column: span 1;
+    grid-template-columns: 1fr;
+}
+
 @media (max-width: 768px) {
     .blog-card.featured {
         grid-column: span 1;
