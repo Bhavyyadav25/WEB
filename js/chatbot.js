@@ -53,7 +53,7 @@ class Chatbot {
                 },
                 wijungle: {
                     role: "Software Development Engineer",
-                    period: "Jul 2023 - Apr 2025",
+                    period: "Jul 2023 - Aug 2025",
                     highlights: [
                         "GraphQL Parser: C++ parser with 40% latency reduction",
                         "DDoS Protection: 35% faster detection, 60% less downtime",
@@ -275,7 +275,7 @@ class Chatbot {
         // WiJungle specific - check before general experience
         if (this.matchesIntent(msg, ['wijungle'])) {
             this.lastTopic = 'skills'; // Suggest skills next
-            return `At **WiJungle** (Jul 2023 - Apr 2025), Bhavy was an SDE building enterprise security solutions:\n\n**Key Projects:**\n\n**1. DDoS Protection System** (Go)\n- 35% faster attack detection\n- 60% reduction in downtime\n\n**2. Web Application Firewall** (Go + ModSecurity)\n- Protected 50+ client websites\n- 25% fewer security breaches\n\n**3. Anti-APT System**\n- 65% reduction in advanced threats\n- Real-time threat intelligence\n\n**4. ICAP Server**\n- Handles 100,000+ daily HTTP/HTTPS requests\n- Content filtering & malware scanning\n\n**5. GraphQL Parser** (C++)\n- 40% latency reduction\n\n**Leadership:** Team Lead managing 3 engineers, Product Owner for WAF project (team of 7)\n\nWant to know about his technical skills?`;
+            return `At **WiJungle** (Jul 2023 - Aug 2025), Bhavy was an SDE building enterprise security solutions:\n\n**Key Projects:**\n\n**1. DDoS Protection System** (Go)\n- 35% faster attack detection\n- 60% reduction in downtime\n\n**2. Web Application Firewall** (Go + ModSecurity)\n- Protected 50+ client websites\n- 25% fewer security breaches\n\n**3. Anti-APT System**\n- 65% reduction in advanced threats\n- Real-time threat intelligence\n\n**4. ICAP Server**\n- Handles 100,000+ daily HTTP/HTTPS requests\n- Content filtering & malware scanning\n\n**5. GraphQL Parser** (C++)\n- 40% latency reduction\n\n**Leadership:** Team Lead managing 3 engineers, Product Owner for WAF project (team of 7)\n\nWant to know about his technical skills?`;
         }
 
         // Projects related - check before experience (more specific)
@@ -287,7 +287,7 @@ class Chatbot {
         // Experience/Work related - general
         if (this.matchesIntent(msg, ['experience', 'job', 'company', 'career', 'work history', 'employment'])) {
             this.lastTopic = 'clickpost';
-            return `Bhavy has 2+ years of professional experience:\n\n**Current: Clickpost** (Sep 2025 - Present)\nSDE building store management, serviceability APIs, and analytics pipelines for quick commerce logistics.\n\n**Previous: WiJungle** (Jul 2023 - Apr 2025)\nSDE & Team Lead building enterprise security solutions - DDoS protection, WAF, Anti-APT systems.\n\n**Highlights:**\n- Led team of 3 engineers\n- Product Owner for WAF project (team of 7)\n- Systems handling 100K+ daily requests\n\nWant to know more about his current role at Clickpost?`;
+            return `Bhavy has 2+ years of professional experience:\n\n**Current: Clickpost** (Sep 2025 - Present)\nSDE building store management, serviceability APIs, and analytics pipelines for quick commerce logistics.\n\n**Previous: WiJungle** (Jul 2023 - Aug 2025)\nSDE & Team Lead building enterprise security solutions - DDoS protection, WAF, Anti-APT systems.\n\n**Highlights:**\n- Led team of 3 engineers\n- Product Owner for WAF project (team of 7)\n- Systems handling 100K+ daily requests\n\nWant to know more about his current role at Clickpost?`;
         }
 
         // Skills related
@@ -383,7 +383,7 @@ class Chatbot {
         switch(topic) {
             case 'wijungle':
                 this.lastTopic = 'skills';
-                return `At **WiJungle** (Jul 2023 - Apr 2025), Bhavy was an SDE building enterprise security solutions:\n\n**Key Projects:**\n\n**1. DDoS Protection System** (Go)\n- 35% faster attack detection\n- 60% reduction in downtime\n\n**2. Web Application Firewall** (Go + ModSecurity)\n- Protected 50+ client websites\n- 25% fewer security breaches\n\n**3. Anti-APT System**\n- 65% reduction in advanced threats\n\n**4. ICAP Server**\n- Handles 100,000+ daily requests\n\n**5. GraphQL Parser** (C++)\n- 40% latency reduction\n\n**Leadership:** Team Lead (3 engineers), Product Owner for WAF (team of 7)\n\nWant to know about his technical skills?`;
+                return `At **WiJungle** (Jul 2023 - Aug 2025), Bhavy was an SDE building enterprise security solutions:\n\n**Key Projects:**\n\n**1. DDoS Protection System** (Go)\n- 35% faster attack detection\n- 60% reduction in downtime\n\n**2. Web Application Firewall** (Go + ModSecurity)\n- Protected 50+ client websites\n- 25% fewer security breaches\n\n**3. Anti-APT System**\n- 65% reduction in advanced threats\n\n**4. ICAP Server**\n- Handles 100,000+ daily requests\n\n**5. GraphQL Parser** (C++)\n- 40% latency reduction\n\n**Leadership:** Team Lead (3 engineers), Product Owner for WAF (team of 7)\n\nWant to know about his technical skills?`;
 
             case 'clickpost':
                 this.lastTopic = 'wijungle';
