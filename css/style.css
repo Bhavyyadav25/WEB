@@ -2534,6 +2534,20 @@ section {
     gap: var(--space-xl);
 }
 
+.blog-grid-published {
+    grid-template-columns: 3fr 2fr;
+}
+
+.blog-grid-published .coming-soon {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+    .blog-grid-published {
+        grid-template-columns: 1fr;
+    }
+}
+
 .blog-card {
     background: var(--bg-secondary);
     border: 1px solid var(--bg-elevated);
