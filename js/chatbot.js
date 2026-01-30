@@ -28,7 +28,7 @@ class Chatbot {
                 degree: "B.Tech in Fiber Science & Nanotechnology",
                 years: "2019-2023",
                 achievements: [
-                    "Captain, Badminton Team - Led team to state gold medal and IIT Delhi GC win",
+                    "Captain, Badminton Team - Led IIT Delhi badminton team; state-level player at school level",
                     "Coordinator, Rendezvous IIT Delhi - Led team of 35 for event management",
                     "Academic Mentor - Mentored students in engineering drawing"
                 ]

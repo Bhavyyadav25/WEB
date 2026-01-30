@@ -73,7 +73,7 @@ KEY ACHIEVEMENTS:
 - Protected 50+ client websites with WAF
 - Built systems handling 100,000+ daily requests
 - Reduced security breaches by 25%, detection time by 35%
-- State gold medal winner in badminton at IIT Delhi
+- Captain of the badminton team at IIT Delhi; represented his state at school level
 
 Be helpful, concise, and encourage visitors to contact Bhavy for opportunities.`
 
@@ -167,7 +167,7 @@ func localResponse(message string) string {
 		},
 		{
 			[]string{"education", "college", "iit", "study"},
-			"Bhavy graduated from IIT Delhi with a B.Tech in Fiber Science & Nanotechnology (2019-2023). He was also the badminton team captain and won a state gold medal!",
+			"Bhavy graduated from IIT Delhi with a B.Tech in Fiber Science & Nanotechnology (2019-2023). He was also the captain of the badminton team and represented his state at the school level.",
 		},
 	}
 
