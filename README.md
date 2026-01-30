@@ -97,7 +97,7 @@ Edit `js/chatbot.js` - Update the `bhavyInfo` object with your information.
 ## Project Structure
 
 ```
-WEB/
+bhavyyadav25.github.io/
 ├── index.html          # Main HTML file
 ├── css/
 │   └── style.css       # All styles

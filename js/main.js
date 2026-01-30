@@ -134,7 +134,7 @@ class App {
         };
 
         // Repos to exclude from display
-        const excludeRepos = ['Hotel-Reservation-Backend', 'VulnHunter', 'WEB'];
+        const excludeRepos = ['Hotel-Reservation-Backend', 'VulnHunter', 'bhavyyadav25.github.io'];
 
         this.fetchGitHubRepos('Bhavyyadav25')
             .then(repos => {
