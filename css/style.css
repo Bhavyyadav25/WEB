@@ -1368,6 +1368,10 @@ section {
 .code-type { color: #e5c07b; }
 .code-function { color: #61afef; }
 .code-string { color: #98c379; }
+.code-comment {
+    color: #6a9955;
+    font-style: italic;
+}
 
 /* Scroll Indicator */
 .scroll-indicator {

@@ -281,31 +281,28 @@
                 <span class="dot yellow"></span>
                 <span class="dot green"></span>
               </div>
-              <span class="window-title">bhavy.go</span>
+              <span class="window-title">loghq.go</span>
             </div>
             <pre
               class="window-code"
-            ><code><span class="code-keyword">package</span> main
+            ><code><span class="code-comment">// loghq — zero-allocation structured logger</span>
+<span class="code-comment">// 320ns/op · 0 allocs/op · zero dependencies</span>
+<span class="code-comment">// github.com/Bhavyyadav25/loghq</span>
 
-<span class="code-keyword">type</span> <span class="code-type">Developer</span> <span class="code-keyword">struct</span> {
-    Name       <span class="code-type">string</span>
-    Title      <span class="code-type">string</span>
-    Skills     []<span class="code-type">string</span>
-    Available  <span class="code-type">bool</span>
+<span class="code-keyword">var</span> pool = <span class="code-type">sync.Pool</span>{
+    New: <span class="code-keyword">func</span>() <span class="code-keyword">any</span> {
+        b := <span class="code-function">make</span>([]<span class="code-keyword">byte</span>, 0, 512)
+        <span class="code-keyword">return</span> &amp;b
+    },
 }
 
-<span class="code-keyword">func</span> <span class="code-function">main</span>() {
-    bhavy := <span class="code-type">Developer</span>{
-        Name:  <span class="code-string">"Bhavy Yadav"</span>,
-        Title: <span class="code-string">"SDE @ Clickpost"</span>,
-        Skills: []<span class="code-type">string</span>{
-            <span class="code-string">"Go"</span>, <span class="code-string">"Java"</span>, <span class="code-string">"Python"</span>,
-            <span class="code-string">"Microservices"</span>,
-            <span class="code-string">"Security"</span>,
-        },
-        Available: <span class="code-keyword">true</span>,
-    }
-    bhavy.<span class="code-function">BuildAmazingThings</span>()
+<span class="code-keyword">func</span> (l *<span class="code-type">Logger</span>) <span class="code-function">log</span>(lvl <span class="code-type">Level</span>, msg <span class="code-keyword">string</span>, fields []<span class="code-type">Field</span>) {
+    b := pool.<span class="code-function">Get</span>().(*[]<span class="code-keyword">byte</span>)
+    *b = <span class="code-function">appendLevel</span>(*b, lvl)
+    *b = <span class="code-function">appendFields</span>(*b, msg, fields)
+    _, _ = l.w.<span class="code-function">Write</span>(*b)
+    *b = (*b)[:0]
+    pool.<span class="code-function">Put</span>(b)
 }</code></pre>
           </div>
         </div>
